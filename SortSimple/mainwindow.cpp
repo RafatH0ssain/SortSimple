@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QTimer>
 #include <QRandomGenerator>
+#include <qcoreapplication.h>
 
 // Constructor
 MainWindow::MainWindow(QWidget *parent)
@@ -80,21 +81,29 @@ void MainWindow::performStep() {
     }
 }
 
-// Perform a single step of Bubble Sort
 void MainWindow::bubbleSortStep() {
     bool swapped = false;
     for (int j = 0; j < data.size() - 1 - currentIndex; ++j) {
         if (data[j] > data[j + 1]) {
+            // Highlight the current swap
+            bars[j]->setStyleSheet("background-color: red;");
+            bars[j + 1]->setStyleSheet("background-color: red;");
+            QCoreApplication::processEvents();
+
             // Swap data
             std::swap(data[j], data[j + 1]);
 
             // Update visuals
             bars[j]->setFixedHeight(data[j] * 5);
             bars[j + 1]->setFixedHeight(data[j + 1] * 5);
-            bars[j]->setStyleSheet("background-color: red;"); // Highlight swap
-            bars[j + 1]->setStyleSheet("background-color: red;");
 
             swapped = true;
+
+            // Restore colors
+            bars[j]->setStyleSheet("background-color: blue;");
+            bars[j + 1]->setStyleSheet("background-color: blue;");
+            QCoreApplication::processEvents();
+
             break; // Perform one swap per timer step
         }
     }
@@ -102,11 +111,6 @@ void MainWindow::bubbleSortStep() {
     if (!swapped) {
         animationTimer->stop();
         statusLabel->setText("Sorting complete!");
-    }
-
-    // Reset bar colors
-    for (QLabel *bar : bars) {
-        bar->setStyleSheet("background-color: blue;");
     }
 
     ++currentIndex;
