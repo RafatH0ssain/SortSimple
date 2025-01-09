@@ -20,8 +20,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Populate dropdown with sorting algorithms
     algorithmSelector->addItem("Bubble Sort");
-    algorithmSelector->addItem("QuickSort"); // Placeholder, implement later
-    algorithmSelector->addItem("MergeSort"); // Placeholder, implement later
+    algorithmSelector->addItem("Quick Sort"); // Placeholder, implement later
+    algorithmSelector->addItem("Merge Sort"); // Placeholder, implement later
+    algorithmSelector->addItem("Insertion Sort"); // Placeholder, implement later
+    algorithmSelector->addItem("Selection Sort"); // Placeholder, implement later
 
     // Connect signals to slots
     connect(startButton, &QPushButton::clicked, this, &MainWindow::startSorting);
