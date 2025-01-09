@@ -25,6 +25,7 @@ private slots:
 private:
     void setupUI();      // Function to set up the UI
     void bubbleSortStep(); // Step for bubble sort animation
+    void quickSortStep(); // Step for bubble sort animation
 
     QWidget *centralWidget;
     QComboBox *algorithmSelector;
