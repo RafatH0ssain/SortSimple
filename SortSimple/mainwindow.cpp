@@ -69,7 +69,13 @@ void MainWindow::startSorting() {
         statusLabel->setText("Sorting using Bubble Sort...");
         currentIndex = 0;
         animationTimer->start(500); // 500ms delay for each step
-    } else {
+    }
+    else if (selectedAlgorithm == "Quick Sort"){
+        statusLabel->setText("Sorting using Quick Sort...");
+        currentIndex = 0;
+        animationTimer->start(500); // 500ms delay for each step
+    }
+    else {
         statusLabel->setText("Algorithm not implemented yet.");
     }
 }
@@ -78,6 +84,9 @@ void MainWindow::startSorting() {
 void MainWindow::performStep() {
     if (algorithmSelector->currentText() == "Bubble Sort") {
         bubbleSortStep();
+    }
+    else if (algorithmSelector->currentText() == "Quick Sort") {
+        quickSortStep();
     }
 }
 
@@ -115,3 +124,82 @@ void MainWindow::bubbleSortStep() {
 
     ++currentIndex;
 }
+
+void MainWindow::quickSortStep() {
+    static QVector<QPair<int, int>> stack; // To store sub-array ranges
+    static int pivotIndex = -1, left = -1, right = -1;
+
+    // Initialize the stack with the full range during the first call
+    if (stack.isEmpty()) {
+        stack.push_back({0, data.size() - 1});
+        pivotIndex = left = right = -1; // Reset indices
+    }
+
+    // If stack is empty, sorting is complete
+    if (stack.isEmpty()) {
+        animationTimer->stop();
+        statusLabel->setText("Sorting complete!");
+        return;
+    }
+
+    // If no current partitioning step is active, set up a new range
+    if (pivotIndex == -1 && !stack.isEmpty()) {
+        auto range = stack.takeLast();
+        int start = range.first, end = range.second;
+
+        if (start < end) {
+            pivotIndex = end;  // Choose pivot (last element)
+            left = start;
+            right = start;
+            bars[pivotIndex]->setStyleSheet("background-color: green;"); // Highlight pivot
+        } else {
+            pivotIndex = left = right = -1; // Reset for next range
+        }
+        QCoreApplication::processEvents();
+    }
+
+    // Perform a single step of partitioning
+    if (pivotIndex != -1) {
+        if (right < pivotIndex) {
+            if (data[right] < data[pivotIndex]) {
+                // Highlight elements being swapped
+                bars[left]->setStyleSheet("background-color: red;");
+                bars[right]->setStyleSheet("background-color: red;");
+                QCoreApplication::processEvents();
+
+                std::swap(data[left], data[right]);
+
+                // Update visuals
+                bars[left]->setFixedHeight(data[left] * 5);
+                bars[right]->setFixedHeight(data[right] * 5);
+
+                // Restore colors
+                bars[left]->setStyleSheet("background-color: blue;");
+                bars[right]->setStyleSheet("background-color: blue;");
+                QCoreApplication::processEvents();
+
+                ++left; // Increment left pointer
+            }
+            ++right; // Increment right pointer
+        } else {
+            // Place pivot in its correct position
+            std::swap(data[left], data[pivotIndex]);
+
+            // Update visuals
+            bars[left]->setFixedHeight(data[left] * 5);
+            bars[pivotIndex]->setFixedHeight(data[pivotIndex] * 5);
+
+            bars[pivotIndex]->setStyleSheet("background-color: blue;");
+            bars[left]->setStyleSheet("background-color: green;"); // Final pivot position
+            QCoreApplication::processEvents();
+
+            // Add new sub-ranges to stack
+            stack.push_back({stack.size() > 0 ? stack.last().first : 0, left - 1});
+            stack.push_back({left + 1, pivotIndex - 1});
+
+            // Reset for next partitioning
+            pivotIndex = left = right = -1;
+        }
+    }
+}
+
