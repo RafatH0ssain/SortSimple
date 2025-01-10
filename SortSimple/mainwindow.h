@@ -35,6 +35,7 @@ private:
     std::vector<int> data;       // Array to sort
     std::vector<QLabel *> bars;  // Bar widgets for visualization
     int currentIndex;            // Index for sorting steps
+    int currentSwapIndex;
     QTimer *animationTimer;      // Timer for step animation
 };
 

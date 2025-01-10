@@ -47,7 +47,7 @@ void MainWindow::setupUI() {
     mainLayout->addWidget(statusLabel);
 
     // Generate random data for bars
-    data = {10, 20, 5, 15, 30, 25, 35};
+    data = {23, 41, 25, 54, 18, 14};
     QHBoxLayout *barsLayout = new QHBoxLayout;
     for (int value : data) {
         QLabel *bar = new QLabel;
@@ -70,7 +70,7 @@ void MainWindow::startSorting() {
     if (selectedAlgorithm == "Bubble Sort") {
         statusLabel->setText("Sorting using Bubble Sort...");
         currentIndex = 0;
-        animationTimer->start(2000);
+        animationTimer->start(1000);
     }
     else if (selectedAlgorithm == "Quick Sort"){
         statusLabel->setText("Sorting using Quick Sort...");
@@ -86,54 +86,62 @@ void MainWindow::startSorting() {
 void MainWindow::performStep() {
     if (algorithmSelector->currentText() == "Bubble Sort") {
         bubbleSortStep();
+
     }
-    else if (algorithmSelector->currentText() == "Quick Sort") {
+    if (algorithmSelector->currentText() == "Quick Sort") {
         quickSortStep();
     }
 }
 
 void MainWindow::bubbleSortStep() {
-    bool swapped = false;
+    static int i = 0; // Loop variable
+    static int j = 0; // Inner loop variable
+    static bool swapped = false;
 
-    // Traverse through all array elements
-    for (int j = 0; j < data.size() - 1 - currentIndex; ++j) {
-        if (data[j] > data[j + 1]) {
-            // Highlight the current swap
-            bars[j]->setStyleSheet("background-color: red;");
-            bars[j]->repaint();
-            bars[j + 1]->setStyleSheet("background-color: red;");
-            bars[j + 1]->repaint();
-            QCoreApplication::processEvents();
+    if (i < data.size()) {
+        if (j < data.size() - 1 - i) {
+            if (data[j] > data[j + 1]) {
+                int currentJ = j; // Capture the value of j
 
-            // Swap data
-            std::swap(data[j], data[j + 1]);
-
-            swapped = true;
-
-            // Update visuals after a small delay
-            QTimer::singleShot(1000, this, [this, j] {
-                bars[j]->setText(QString::number(data[j]));
-                bars[j + 1]->setText(QString::number(data[j + 1]));
+                // Highlight the current swap
+                bars[currentJ]->setStyleSheet("background-color: red;");
+                bars[currentJ + 1]->setStyleSheet("background-color: red;");
                 QCoreApplication::processEvents();
-            });
 
-            // Restore original color after a small delay
-            QTimer::singleShot(1000, this, [this, j] {
-                bars[j]->setStyleSheet("background-color: blue;");
-                bars[j + 1]->setStyleSheet("background-color: blue;");
-                QCoreApplication::processEvents();
-            });
+                swapped = true;
+
+                // Swap data after a small delay to visualize the swap
+                QTimer::singleShot(700, this, [this, currentJ] {
+                    std::swap(data[currentJ], data[currentJ + 1]);
+
+                    // Update visuals after swap
+                    bars[currentJ]->setText(QString::number(data[currentJ]));
+                    bars[currentJ + 1]->setText(QString::number(data[currentJ + 1]));
+
+                    QTimer::singleShot(300, this, [this, currentJ] {
+                        // Restore original color after the swap
+                        bars[currentJ]->setStyleSheet("background-color: blue;");
+                        bars[currentJ + 1]->setStyleSheet("background-color: blue;");
+                        // Continue to the next iteration
+                        bubbleSortStep();
+                    });
+                });
+                return; // Exit to allow the timer to trigger the next step
+            }
+            ++j; // Move to the next pair
+            // bubbleSortStep(); // Continue to the next iteration
+        } else {
+            if (!swapped) {
+                // If no swaps were made, the sorting is complete
+                animationTimer->stop();
+                statusLabel->setText("Sorting complete!");
+            }
+            ++i; // Move to the next pass
+            j = 0; // Reset inner loop variable
+            swapped = false; // Reset swap flag
+            bubbleSortStep(); // Continue to the next pass
         }
     }
-
-    if (!swapped) {
-        // If no swaps were made, the sorting is complete
-        animationTimer->stop();
-        statusLabel->setText("Sorting complete!");
-    }
-
-    // Increment currentIndex to reduce the range for the next pass
-    ++currentIndex;
 }
 
 void MainWindow::quickSortStep() {
