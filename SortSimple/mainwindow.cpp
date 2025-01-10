@@ -52,7 +52,9 @@ void MainWindow::setupUI() {
     for (int value : data) {
         QLabel *bar = new QLabel;
         bar->setStyleSheet("background-color: blue;");
-        bar->setFixedSize(30, value * 5); // Bar height proportional to value
+        bar->setFixedSize(80, 80);
+        bar->setText(QString::number(value));
+        bar->setAlignment(Qt::AlignCenter);
         barsLayout->addWidget(bar);
         bars.push_back(bar);
     }
@@ -68,12 +70,12 @@ void MainWindow::startSorting() {
     if (selectedAlgorithm == "Bubble Sort") {
         statusLabel->setText("Sorting using Bubble Sort...");
         currentIndex = 0;
-        animationTimer->start(500); // 500ms delay for each step
+        animationTimer->start(2000);
     }
     else if (selectedAlgorithm == "Quick Sort"){
         statusLabel->setText("Sorting using Quick Sort...");
         currentIndex = 0;
-        animationTimer->start(500); // 500ms delay for each step
+        animationTimer->start(2000);
     }
     else {
         statusLabel->setText("Algorithm not implemented yet.");
@@ -92,36 +94,45 @@ void MainWindow::performStep() {
 
 void MainWindow::bubbleSortStep() {
     bool swapped = false;
+
+    // Traverse through all array elements
     for (int j = 0; j < data.size() - 1 - currentIndex; ++j) {
         if (data[j] > data[j + 1]) {
             // Highlight the current swap
             bars[j]->setStyleSheet("background-color: red;");
+            bars[j]->repaint();
             bars[j + 1]->setStyleSheet("background-color: red;");
+            bars[j + 1]->repaint();
             QCoreApplication::processEvents();
 
             // Swap data
             std::swap(data[j], data[j + 1]);
 
-            // Update visuals
-            bars[j]->setFixedHeight(data[j] * 5);
-            bars[j + 1]->setFixedHeight(data[j + 1] * 5);
-
             swapped = true;
 
-            // Restore colors
-            bars[j]->setStyleSheet("background-color: blue;");
-            bars[j + 1]->setStyleSheet("background-color: blue;");
-            QCoreApplication::processEvents();
+            // Update visuals after a small delay
+            QTimer::singleShot(1000, this, [this, j] {
+                bars[j]->setText(QString::number(data[j]));
+                bars[j + 1]->setText(QString::number(data[j + 1]));
+                QCoreApplication::processEvents();
+            });
 
-            break; // Perform one swap per timer step
+            // Restore original color after a small delay
+            QTimer::singleShot(1000, this, [this, j] {
+                bars[j]->setStyleSheet("background-color: blue;");
+                bars[j + 1]->setStyleSheet("background-color: blue;");
+                QCoreApplication::processEvents();
+            });
         }
     }
 
     if (!swapped) {
+        // If no swaps were made, the sorting is complete
         animationTimer->stop();
         statusLabel->setText("Sorting complete!");
     }
 
+    // Increment currentIndex to reduce the range for the next pass
     ++currentIndex;
 }
 
