@@ -21,8 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Populate dropdown with sorting algorithms
     algorithmSelector->addItem("Bubble Sort");
-    algorithmSelector->addItem("Quick Sort"); // Placeholder, implement later
-    algorithmSelector->addItem("Merge Sort"); // Placeholder, implement later
+    algorithmSelector->addItem("Quick Sort");
+    algorithmSelector->addItem("Merge Sort");
     algorithmSelector->addItem("Insertion Sort"); // Placeholder, implement later
     algorithmSelector->addItem("Selection Sort"); // Placeholder, implement later
 
@@ -77,6 +77,11 @@ void MainWindow::startSorting() {
         currentIndex = 0;
         animationTimer->start(1000);
     }
+    else if (selectedAlgorithm == "Merge Sort"){
+        statusLabel->setText("Sorting using Merge Sort...");
+        currentIndex = 0;
+        animationTimer->start(1000);
+    }
     else {
         statusLabel->setText("Algorithm not implemented yet.");
     }
@@ -89,6 +94,9 @@ void MainWindow::performStep() {
     }
     if ((algorithmSelector->currentText() == "Quick Sort")) {
         quickSortStep();
+    }
+    if (algorithmSelector->currentText() == "Merge Sort") {
+        mergeSortStep();
     }
 }
 
@@ -245,3 +253,97 @@ void MainWindow::quickSortStep() {
     }
 }
 
+void MainWindow::mergeSortStep() {
+    static QVector<QPair<int, int>> stack;  // Stack to store sub-array ranges
+    static QVector<int> tempData;           // Temporary array for merging
+    static int start = -1, end = -1, mid = -1;
+
+    // Initialize stack with the full range during the first call
+    if (stack.isEmpty()) {
+        stack.push_back({0, data.size() - 1});
+    }
+
+    // If no current partitioning step is active, set up a new range
+    if (start == -1 && !stack.isEmpty()) {
+        // Pop the range from the stack
+        auto range = stack.takeLast();
+        start = range.first;
+        end = range.second;
+
+        // Calculate mid-point of the range
+        mid = (start + end) / 2;
+
+        // Push new sub-ranges onto the stack for further processing
+        if (start < mid) {
+            stack.push_back({start, mid});
+        }
+        if (mid + 1 < end) {
+            stack.push_back({mid + 1, end});
+        }
+
+        // Animate division of the array (highlight the current sub-array being processed)
+        for (int i = start; i <= end; ++i) {
+            if (i >= 0 && i < bars.size()) {
+                bars[i]->setStyleSheet("background-color: red;");  // Highlight the subarray being processed
+            }
+        }
+        QCoreApplication::processEvents();  // Ensure UI updates
+
+        return;  // Exit to allow the next event loop to execute
+    }
+
+    // Perform merge step once the range is split
+    if (start <= mid && mid + 1 <= end) {
+        int i = start, j = mid + 1, k = start;
+
+        // Prepare tempData for merging
+        tempData.clear();
+        for (int i = start; i <= end; ++i) {
+            tempData.push_back(data[i]);
+        }
+
+        // Merge process: merge left and right halves into tempData
+        while (i <= mid && j <= end) {
+            if (tempData[i] <= tempData[j]) {
+                data[k++] = tempData[i++];
+            } else {
+                data[k++] = tempData[j++];
+            }
+        }
+
+        // If any remaining elements in the left sub-array, add them
+        while (i <= mid) {
+            data[k++] = tempData[i++];
+        }
+
+        // If any remaining elements in the right sub-array, add them
+        while (j <= end) {
+            data[k++] = tempData[j++];
+        }
+
+        // Update visuals after merging
+        for (int i = start; i <= end; ++i) {
+            if (i >= 0 && i < bars.size()) {
+                bars[i]->setText(QString::number(data[i]));
+                bars[i]->setStyleSheet("background-color: blue;");  // Reset the bar color after merge
+            }
+        }
+
+        QCoreApplication::processEvents();  // Ensure UI updates
+    }
+
+    // Check if sorting is complete
+    if (isSorted()) {
+        animationTimer->stop();
+        statusLabel->setText("Sorting complete!");
+
+        // Update all bars to show sorted state
+        for (QLabel* bar : bars) {
+            bar->setStyleSheet("background-color: green;");
+        }
+
+        // Reset static variables for future sorting
+        stack.clear();
+        start = end = mid = -1;  // Reset the partitioning variables
+    }
+}
