@@ -75,7 +75,7 @@ void MainWindow::startSorting() {
     else if (selectedAlgorithm == "Quick Sort"){
         statusLabel->setText("Sorting using Quick Sort...");
         currentIndex = 0;
-        animationTimer->start(2000);
+        animationTimer->start(1000);
     }
     else {
         statusLabel->setText("Algorithm not implemented yet.");
@@ -86,7 +86,6 @@ void MainWindow::startSorting() {
 void MainWindow::performStep() {
     if (algorithmSelector->currentText() == "Bubble Sort") {
         bubbleSortStep();
-
     }
     if ((algorithmSelector->currentText() == "Quick Sort")) {
         quickSortStep();
@@ -197,13 +196,15 @@ void MainWindow::quickSortStep() {
                 std::swap(data[left], data[right]);
 
                 // Update visuals
-                bars[left]->setFixedHeight(data[left] * 5);
-                bars[right]->setFixedHeight(data[right] * 5);
+                bars[left]->setText(QString::number(data[left]));
+                bars[right]->setText(QString::number(data[right]));
 
-                // Restore colors
-                bars[left]->setStyleSheet("background-color: blue;");
-                bars[right]->setStyleSheet("background-color: blue;");
-                QCoreApplication::processEvents();
+                // Restore colors after a short delay
+                QTimer::singleShot(700, this, [this, left = left, right = right] {
+                    bars[left]->setStyleSheet("background-color: blue;");
+                    bars[right]->setStyleSheet("background-color: blue;");
+                    QCoreApplication::processEvents();
+                });
 
                 ++left; // Increment left pointer
             }
@@ -213,12 +214,15 @@ void MainWindow::quickSortStep() {
             std::swap(data[left], data[pivotIndex]);
 
             // Update visuals
-            bars[left]->setFixedHeight(data[left] * 5);
-            bars[pivotIndex]->setFixedHeight(data[pivotIndex] * 5);
+            bars[left]->setText(QString::number(data[left]));
+            bars[pivotIndex]->setText(QString::number(data[pivotIndex]));
 
-            bars[pivotIndex]->setStyleSheet("background-color: blue;");
-            bars[left]->setStyleSheet("background-color: green;"); // Final pivot position
-            QCoreApplication::processEvents();
+            // Highlight pivot for a moment before returning to normal color
+            QTimer::singleShot(300, this, [this, left = left, pivotIndex = pivotIndex] {
+                bars[pivotIndex]->setStyleSheet("background-color: blue;");
+                bars[left]->setStyleSheet("background-color: green;"); // Final pivot position
+                QCoreApplication::processEvents();
+            });
 
             // Push new sub-ranges to stack
             if ((start < left - 1)) {
@@ -237,7 +241,7 @@ void MainWindow::quickSortStep() {
         animationTimer->stop();
         statusLabel->setText("Sorting complete!");
         for (QLabel* bar : bars) {
-            bar->setStyleSheet("background-color: green;"); // Final color for sorted bars
+            bar->setStyleSheet("background-color: blue;"); // Final color for sorted bars
         }
 
         // Reset static variables for future sorting
@@ -245,3 +249,4 @@ void MainWindow::quickSortStep() {
         left = right = pivotIndex = start = end = -1;
     }
 }
+
