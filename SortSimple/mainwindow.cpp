@@ -47,7 +47,12 @@ void MainWindow::setupUI() {
     mainLayout->addWidget(statusLabel);
 
     // Generate random data for bars
+<<<<<<< HEAD
     data = {23, 41, 25, 54, 18, 14};
+=======
+    // data = {10, 20, 5, 15, 30, 25, 35};
+    data = {10, 9, 3, 7, 4, 6, 12, 2, 5, 11, 8, 1};
+>>>>>>> QuickSort
     QHBoxLayout *barsLayout = new QHBoxLayout;
     for (int value : data) {
         QLabel *bar = new QLabel;
@@ -88,9 +93,19 @@ void MainWindow::performStep() {
         bubbleSortStep();
 
     }
-    if (algorithmSelector->currentText() == "Quick Sort") {
+    if ((algorithmSelector->currentText() == "Quick Sort")) {
         quickSortStep();
     }
+}
+
+// Check if data is sorted
+bool MainWindow::isSorted() {
+    for (int i = 0; i < data.size() - 1; ++i) {
+        if (data[i] > data[i + 1]) {
+            return false; // Not sorted in ascending order
+        }
+    }
+    return true; // Sorted in ascending order
 }
 
 void MainWindow::bubbleSortStep() {
@@ -145,47 +160,45 @@ void MainWindow::bubbleSortStep() {
 }
 
 void MainWindow::quickSortStep() {
-    static QVector<QPair<int, int>> stack; // To store sub-array ranges
-    static int pivotIndex = -1, left = -1, right = -1;
+    static QVector<QPair<int, int>> stack; // Stack to store sub-array ranges
+    static int left = -1, right = -1, pivotIndex = -1;
+    static int start = -1, end = -1; // Track current range explicitly
 
-    // Initialize the stack with the full range during the first call
+    // Initialize stack with the full range during the first call
     if (stack.isEmpty()) {
         stack.push_back({0, data.size() - 1});
-        pivotIndex = left = right = -1; // Reset indices
-    }
-
-    // If stack is empty, sorting is complete
-    if (stack.isEmpty()) {
-        animationTimer->stop();
-        statusLabel->setText("Sorting complete!");
-        return;
     }
 
     // If no current partitioning step is active, set up a new range
     if (pivotIndex == -1 && !stack.isEmpty()) {
         auto range = stack.takeLast();
-        int start = range.first, end = range.second;
+        start = range.first;
+        end = range.second;
 
         if (start < end) {
-            pivotIndex = end;  // Choose pivot (last element)
+            pivotIndex = end; // Choose the last element as pivot
             left = start;
             right = start;
             bars[pivotIndex]->setStyleSheet("background-color: green;"); // Highlight pivot
+            QCoreApplication::processEvents();
         } else {
-            pivotIndex = left = right = -1; // Reset for next range
+            // Reset and skip invalid ranges
+            pivotIndex = -1;
+            left = -1;
+            right = -1;
         }
-        QCoreApplication::processEvents();
     }
 
-    // Perform a single step of partitioning
+    // If partitioning is active, perform a single step
     if (pivotIndex != -1) {
         if (right < pivotIndex) {
-            if (data[right] < data[pivotIndex]) {
+            if (data[right] <= data[pivotIndex]) { // Ascending order comparison
                 // Highlight elements being swapped
                 bars[left]->setStyleSheet("background-color: red;");
                 bars[right]->setStyleSheet("background-color: red;");
                 QCoreApplication::processEvents();
 
+                // Swap elements
                 std::swap(data[left], data[right]);
 
                 // Update visuals
@@ -212,13 +225,28 @@ void MainWindow::quickSortStep() {
             bars[left]->setStyleSheet("background-color: green;"); // Final pivot position
             QCoreApplication::processEvents();
 
-            // Add new sub-ranges to stack
-            stack.push_back({stack.size() > 0 ? stack.last().first : 0, left - 1});
-            stack.push_back({left + 1, pivotIndex - 1});
+            // Push new sub-ranges to stack
+            if ((start < left - 1)) {
+                stack.push_back({start, left - 1});
+            }
+            if ((left + 1 < end)) {
+                stack.push_back({left + 1, end});
+            }
 
             // Reset for next partitioning
             pivotIndex = left = right = -1;
         }
     }
-}
 
+    if(isSorted()){
+        animationTimer->stop();
+        statusLabel->setText("Sorting complete!");
+        for (QLabel* bar : bars) {
+            bar->setStyleSheet("background-color: green;"); // Final color for sorted bars
+        }
+
+        // Reset static variables for future sorting
+        stack.clear();
+        left = right = pivotIndex = start = end = -1;
+    }
+}
