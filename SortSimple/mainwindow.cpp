@@ -187,11 +187,6 @@ void MainWindow::quickSortStep() {
     if (pivotIndex != -1) {
         if (right < pivotIndex) {
             if (data[right] <= data[pivotIndex]) { // Ascending order comparison
-                // Highlight elements being swapped
-                bars[left]->setStyleSheet("background-color: red;");
-                bars[right]->setStyleSheet("background-color: red;");
-                QCoreApplication::processEvents();
-
                 // Swap elements
                 std::swap(data[left], data[right]);
 
