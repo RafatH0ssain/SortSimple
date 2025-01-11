@@ -47,12 +47,7 @@ void MainWindow::setupUI() {
     mainLayout->addWidget(statusLabel);
 
     // Generate random data for bars
-<<<<<<< HEAD
     data = {23, 41, 25, 54, 18, 14};
-=======
-    // data = {10, 20, 5, 15, 30, 25, 35};
-    data = {10, 9, 3, 7, 4, 6, 12, 2, 5, 11, 8, 1};
->>>>>>> QuickSort
     QHBoxLayout *barsLayout = new QHBoxLayout;
     for (int value : data) {
         QLabel *bar = new QLabel;
