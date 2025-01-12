@@ -27,6 +27,7 @@ private:
     void bubbleSortStep(); // Step for bubble sort animation
     void quickSortStep(); // Step for quick sort animation
     void mergeSortStep(); // Step for merge sort animation
+    void insertionSortStep(); // Step for insertion sort animation
     bool isSorted();
 
     QWidget *centralWidget;
