@@ -29,10 +29,12 @@ private:
     void mergeSortStep(); // Step for merge sort animation
     void insertionSortStep(); // Step for insertion sort animation
     bool isSorted();
+    void resetSorting();
 
     QWidget *centralWidget;
     QComboBox *algorithmSelector;
     QPushButton *startButton;
+    QPushButton *resetButton;
     QLabel *statusLabel;
 
     std::vector<int> data;       // Array to sort
