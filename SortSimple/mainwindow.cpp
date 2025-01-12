@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     centralWidget(new QWidget(this)),
     algorithmSelector(new QComboBox(this)),
     startButton(new QPushButton("Start", this)),
+    resetButton(new QPushButton("Reset", this)),
     statusLabel(new QLabel("Select an algorithm and start", this)),
     currentIndex(0),
     animationTimer(new QTimer(this)) {
@@ -23,16 +24,41 @@ MainWindow::MainWindow(QWidget *parent)
     algorithmSelector->addItem("Bubble Sort");
     algorithmSelector->addItem("Quick Sort");
     algorithmSelector->addItem("Merge Sort");
-    algorithmSelector->addItem("Insertion Sort"); // Placeholder, implement later
+    algorithmSelector->addItem("Insertion Sort");
     algorithmSelector->addItem("Selection Sort"); // Placeholder, implement later
 
     // Connect signals to slots
     connect(startButton, &QPushButton::clicked, this, &MainWindow::startSorting);
+    connect(resetButton, &QPushButton::clicked, this, &MainWindow::resetSorting);
     connect(animationTimer, &QTimer::timeout, this, &MainWindow::performStep);
 }
 
 // Destructor
 MainWindow::~MainWindow() {}
+
+void MainWindow::resetSorting() {
+    // Reset the data to its initial unsorted state
+    data = {23, 41, 25, 54, 18, 14, 9, 10};
+
+    // Reset the visualization: all bars back to blue
+    for (int i = 0; i < bars.size(); ++i) {
+        bars[i]->setText(QString::number(data[i]));  // Restore original data value on each bar
+        bars[i]->setStyleSheet("background-color: blue;");  // Set all bars to blue
+    }
+
+    // Stop the timer
+    animationTimer->stop();
+
+    // Reset the status label
+    statusLabel->setText("Select an algorithm and start");
+
+    // Reset the algorithm selection (optional)
+    algorithmSelector->setCurrentIndex(0);  // Set to the default index, or any index you prefer
+
+    // Reset all sorting state variables
+    currentIndex = 0;  // Reset the step index to 0
+}
+
 
 // Set up the UI
 void MainWindow::setupUI() {
@@ -42,6 +68,7 @@ void MainWindow::setupUI() {
     QHBoxLayout *controlsLayout = new QHBoxLayout;
     controlsLayout->addWidget(algorithmSelector);
     controlsLayout->addWidget(startButton);
+    controlsLayout->addWidget(resetButton);
 
     mainLayout->addLayout(controlsLayout);
     mainLayout->addWidget(statusLabel);
