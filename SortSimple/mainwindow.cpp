@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include <QDebug>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -220,7 +219,7 @@ void MainWindow::quickSortStep() {
             pivotIndex = end; // Choose the last element as pivot
             left = start;
             right = start;
-            bars[pivotIndex]->setStyleSheet("background-color: green;"); // Highlight pivot
+            bars[pivotIndex]->setStyleSheet("background-color: red;"); // Highlight pivot
             QCoreApplication::processEvents();
         } else {
             // Reset and skip invalid ranges
@@ -262,7 +261,7 @@ void MainWindow::quickSortStep() {
             // Highlight pivot for a moment before returning to normal color
             QTimer::singleShot(300, this, [this, left = left, pivotIndex = pivotIndex] {
                 bars[pivotIndex]->setStyleSheet("background-color: blue;");
-                bars[left]->setStyleSheet("background-color: green;"); // Final pivot position
+                bars[left]->setStyleSheet("background-color: red;"); // Final pivot position
                 QCoreApplication::processEvents();
             });
 
@@ -283,7 +282,7 @@ void MainWindow::quickSortStep() {
         animationTimer->stop();
         statusLabel->setText("Sorting complete!");
         for (QLabel* bar : bars) {
-            bar->setStyleSheet("background-color: blue;"); // Final color for sorted bars
+            bar->setStyleSheet("background-color: green;"); // Final color for sorted bars
         }
 
         // Reset static variables for future sorting
@@ -299,7 +298,6 @@ void MainWindow::mergeSortStep() {
 
     // Check if sorting is complete
     if (isSorted()) {
-        qDebug() << "Array is sorted. Stopping animation.";
         statusLabel->setText("Sorting complete!");
 
         // Update all bars to show sorted state
@@ -316,7 +314,6 @@ void MainWindow::mergeSortStep() {
     // Initialize stack with the full range during the first call
     if (stack.isEmpty()) {
         stack.push_back({0, data.size() - 1});
-        qDebug() << "Initialized stack with full range:" << 0 << "to" << data.size() - 1;
     }
 
     // If no current partitioning step is active, set up a new range
@@ -328,24 +325,19 @@ void MainWindow::mergeSortStep() {
 
         // Calculate mid-point of the range
         mid = (start + end) / 2;
-        qDebug() << "Popped range from stack:" << start << "to" << end;
-        qDebug() << "Calculated mid-point:" << mid;
 
         // Push new sub-ranges onto the stack for further processing
         if (start < mid) {
             stack.push_back({start, mid});
-            qDebug() << "Pushed new sub-range to stack: " << start << "to" << mid;
         }
         if (mid + 1 < end) {
             stack.push_back({mid + 1, end});
-            qDebug() << "Pushed new sub-range to stack: " << mid + 1 << "to" << end;
         }
 
         // Animate division of the array (highlight the current sub-array being processed)
         for (int i = start; i <= end; ++i) {
             if (i >= 0 && i < bars.size() && !isSorted()) {
                 bars[i]->setStyleSheet("background-color: red;");
-                qDebug() << "Highlighting bar at index:" << i << "with value:" << data[i];
             }
         }
         QCoreApplication::processEvents();  // Ensure UI updates
@@ -399,7 +391,6 @@ void MainWindow::mergeSortStep() {
             if (i >= 0 && i < bars.size()) {
                 bars[i]->setText(QString::number(data[i]));
                 bars[i]->setStyleSheet("background-color: blue;");  // Reset the bar color after merge
-                qDebug() << "Updated bar at index:" << i << "with value:" << data[i];
             }
         }
 
