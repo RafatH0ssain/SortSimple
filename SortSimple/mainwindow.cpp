@@ -187,6 +187,10 @@ void MainWindow::bubbleSortStep() {
                 // If no swaps were made, the sorting is complete
                 animationTimer->stop();
                 statusLabel->setText("Sorting complete!");
+
+                for (auto* bar : bars) {
+                    bar->setStyleSheet("background-color: green;");
+                }
             }
             ++i; // Move to the next pass
             j = 0; // Reset inner loop variable
