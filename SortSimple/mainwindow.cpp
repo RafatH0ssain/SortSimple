@@ -278,25 +278,34 @@ void MainWindow::insertionSortStep() {
         bars[j + 1]->setStyleSheet("background-color: red;");
         QCoreApplication::processEvents();
 
-        if(data[j]>data[j+1]){
-            // Shift the larger element to the right (move operation)
-            int temp = data[j];
+
+
+        // Restore original color after a short delay
+        QTimer::singleShot(500, this, [this, &j] {
+            if(data[j]>data[j+1]){
+                // Shift the larger element to the right (move operation)
+                int temp = data[j];
             data[j] = data[j + 1];
             data[j + 1] = temp;  // Move the element one position to the right
 
-            // Update the UI
-            bars[j + 1]->setText(QString::number(data[j + 1]));
-            bars[j]->setText(QString::number(data[j]));
-        }
+                // std::swap(data[j], data[j + 1]);
 
-        // Restore original color after a short delay
-        QTimer::singleShot(1000, this, [this, j] {
-            bars[j]->setStyleSheet("background-color: blue;");
-            bars[j + 1]->setStyleSheet("background-color: blue;");
-            QCoreApplication::processEvents();
+                // Update the UI
+                bars[j + 1]->setText(QString::number(data[j + 1]));
+                bars[j]->setText(QString::number(data[j]));
+            }
+
+            QTimer::singleShot(500, this, [this, j] {
+                bars[j]->setStyleSheet("background-color: blue;");
+                bars[j + 1]->setStyleSheet("background-color: blue;");
+                QCoreApplication::processEvents();
+            });
+
+            --j; // Move to the left
+
         });
 
-        --j; // Move to the left
+
     }
 
     // Insert the key at the correct position
