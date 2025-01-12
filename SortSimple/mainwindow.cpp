@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-
+#include <QDebug>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -47,7 +47,7 @@ void MainWindow::setupUI() {
     mainLayout->addWidget(statusLabel);
 
     // Generate random data for bars
-    data = {23, 41, 25, 54, 18, 14};
+    data = {23, 41, 25, 54, 18, 14, 9, 10};
     QHBoxLayout *barsLayout = new QHBoxLayout;
     for (int value : data) {
         QLabel *bar = new QLabel;
@@ -258,9 +258,26 @@ void MainWindow::mergeSortStep() {
     static QVector<int> tempData;           // Temporary array for merging
     static int start = -1, end = -1, mid = -1;
 
+    // Check if sorting is complete
+    if (isSorted()) {
+        qDebug() << "Array is sorted. Stopping animation.";
+        statusLabel->setText("Sorting complete!");
+
+        // Update all bars to show sorted state
+        for (QLabel* bar : bars) {
+            bar->setStyleSheet("background-color: green;");
+        }
+
+        // Reset static variables for future sorting
+        stack.clear();
+        start = end = mid = -1;  // Reset the partitioning variables
+        animationTimer->stop();
+    }
+
     // Initialize stack with the full range during the first call
     if (stack.isEmpty()) {
         stack.push_back({0, data.size() - 1});
+        qDebug() << "Initialized stack with full range:" << 0 << "to" << data.size() - 1;
     }
 
     // If no current partitioning step is active, set up a new range
@@ -272,53 +289,70 @@ void MainWindow::mergeSortStep() {
 
         // Calculate mid-point of the range
         mid = (start + end) / 2;
+        qDebug() << "Popped range from stack:" << start << "to" << end;
+        qDebug() << "Calculated mid-point:" << mid;
 
         // Push new sub-ranges onto the stack for further processing
         if (start < mid) {
             stack.push_back({start, mid});
+            qDebug() << "Pushed new sub-range to stack: " << start << "to" << mid;
         }
         if (mid + 1 < end) {
             stack.push_back({mid + 1, end});
+            qDebug() << "Pushed new sub-range to stack: " << mid + 1 << "to" << end;
         }
 
         // Animate division of the array (highlight the current sub-array being processed)
         for (int i = start; i <= end; ++i) {
-            if (i >= 0 && i < bars.size()) {
-                bars[i]->setStyleSheet("background-color: red;");  // Highlight the subarray being processed
+            if (i >= 0 && i < bars.size() && !isSorted()) {
+                bars[i]->setStyleSheet("background-color: red;");
+                qDebug() << "Highlighting bar at index:" << i << "with value:" << data[i];
             }
         }
         QCoreApplication::processEvents();  // Ensure UI updates
-
         return;  // Exit to allow the next event loop to execute
     }
 
     // Perform merge step once the range is split
     if (start <= mid && mid + 1 <= end) {
-        int i = start, j = mid + 1, k = start;
+        int n1 = mid - start + 1;
+        int n2 = end - mid;
 
-        // Prepare tempData for merging
-        tempData.clear();
-        for (int i = start; i <= end; ++i) {
-            tempData.push_back(data[i]);
-        }
+        // Create temp vectors
+        QVector<int> L(n1), R(n2);
 
-        // Merge process: merge left and right halves into tempData
-        while (i <= mid && j <= end) {
-            if (tempData[i] <= tempData[j]) {
-                data[k++] = tempData[i++];
+        // Copy data to temp vectors L[] and R[]
+        for (int i = 0; i < n1; ++i)
+            L[i] = data[start + i];
+        for (int j = 0; j < n2; ++j)
+            R[j] = data[mid + 1 + j];
+
+        int i = 0, j = 0, k = start;
+
+        // Merge the temp vectors back into data[start..end]
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                data[k] = L[i];
+                i++;
             } else {
-                data[k++] = tempData[j++];
+                data[k] = R[j];
+                j++;
             }
+            k++;
         }
 
-        // If any remaining elements in the left sub-array, add them
-        while (i <= mid) {
-            data[k++] = tempData[i++];
+        // Copy the remaining elements of L[], if there are any
+        while (i < n1) {
+            data[k] = L[i];
+            i++;
+            k++;
         }
 
-        // If any remaining elements in the right sub-array, add them
-        while (j <= end) {
-            data[k++] = tempData[j++];
+        // Copy the remaining elements of R[], if there are any
+        while (j < n2) {
+            data[k] = R[j];
+            j++;
+            k++;
         }
 
         // Update visuals after merging
@@ -326,24 +360,14 @@ void MainWindow::mergeSortStep() {
             if (i >= 0 && i < bars.size()) {
                 bars[i]->setText(QString::number(data[i]));
                 bars[i]->setStyleSheet("background-color: blue;");  // Reset the bar color after merge
+                qDebug() << "Updated bar at index:" << i << "with value:" << data[i];
             }
         }
 
         QCoreApplication::processEvents();  // Ensure UI updates
-    }
 
-    // Check if sorting is complete
-    if (isSorted()) {
-        animationTimer->stop();
-        statusLabel->setText("Sorting complete!");
-
-        // Update all bars to show sorted state
-        for (QLabel* bar : bars) {
-            bar->setStyleSheet("background-color: green;");
-        }
-
-        // Reset static variables for future sorting
-        stack.clear();
-        start = end = mid = -1;  // Reset the partitioning variables
+        // Reset indices to process the next range
+        start = end = mid = -1;  // Reset after a merge step
+        return;  // Exit to allow the next event loop to execute
     }
 }
