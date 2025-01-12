@@ -82,6 +82,11 @@ void MainWindow::startSorting() {
         currentIndex = 0;
         animationTimer->start(1000);
     }
+    else if (selectedAlgorithm == "Insertion Sort"){
+        statusLabel->setText("Sorting using Insertion Sort...");
+        currentIndex = 0;
+        animationTimer->start(1000);
+    }
     else {
         statusLabel->setText("Algorithm not implemented yet.");
     }
@@ -92,11 +97,14 @@ void MainWindow::performStep() {
     if (algorithmSelector->currentText() == "Bubble Sort") {
         bubbleSortStep();
     }
-    if ((algorithmSelector->currentText() == "Quick Sort")) {
+    else if ((algorithmSelector->currentText() == "Quick Sort")) {
         quickSortStep();
     }
-    if (algorithmSelector->currentText() == "Merge Sort") {
+    else if (algorithmSelector->currentText() == "Merge Sort") {
         mergeSortStep();
+    }
+    else if ((algorithmSelector->currentText() == "Insertion Sort")) {
+        insertionSortStep();
     }
 }
 
@@ -370,4 +378,66 @@ void MainWindow::mergeSortStep() {
         start = end = mid = -1;  // Reset after a merge step
         return;  // Exit to allow the next event loop to execute
     }
+}
+
+void MainWindow::insertionSortStep() {
+    static int i = 1;  // Start from the second element
+    static int j = -1; // Initialize outside the loop to use in both conditions
+    static int key = -1; // Initialize outside the loop to use in both conditions
+
+    // Base case: if sorting is done, stop the timer and set status
+    if (i >= data.size()) {
+        animationTimer->stop();
+        statusLabel->setText("Sorting complete!");
+        for (QLabel* bar : bars) {
+            bar->setStyleSheet("background-color: green;");  // Final color for sorted bars
+        }
+        return;
+    }
+
+    // Initialize key and j for the first time
+    if (key == -1 && j == -1) {
+        key = data[i];
+        j = i - 1;
+    }
+
+    // Reset all bars' colors to blue before the new comparison
+    for (int k = 0; k < data.size(); ++k) {
+        bars[k]->setStyleSheet("background-color: blue;");
+    }
+
+    // Highlight the key
+    bars[i]->setStyleSheet("background-color: yellow;");
+
+    // Find the correct position for the key in the sorted part of the array
+    if (j >= 0 && data[j] > key) {
+        // Highlight the elements being compared
+        bars[j]->setStyleSheet("background-color: red;");
+        bars[j + 1]->setStyleSheet("background-color: red;");
+        QCoreApplication::processEvents();
+
+        // Shift the larger element to the right (move operation)
+        int temp = data[j];
+        data[j] = data[j + 1];
+        data[j + 1] = temp;
+
+        // Update the UI
+        bars[j + 1]->setText(QString::number(data[j + 1]));
+        bars[j]->setText(QString::number(data[j]));
+
+        --j; // Move to the next element to the left
+        return; // Exit and wait for the next step to proceed
+    } else {
+        // Insert the key at the correct position
+        data[j + 1] = key;
+        bars[j + 1]->setText(QString::number(key));
+        bars[j + 1]->setStyleSheet("background-color: blue;");
+
+        // Move to the next element to be inserted
+        ++i;
+        key = -1; // Reset key
+        j = -1;  // Reset j
+    }
+
+    QCoreApplication::processEvents();  // Ensure UI updates
 }
