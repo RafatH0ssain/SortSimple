@@ -1,0 +1,57 @@
+/* styles.css */
+
+/* General window styling */
+QMainWindow {
+    background-color: white;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+/* Styling for buttons */
+QPushButton {
+    color: #828282;
+    background-color: white;
+    font-size: 14px;
+    padding: 10px 20px;
+    border: 1px solid #828282;
+}
+
+QPushButton:hover {
+    background-color: #1E415F;
+    color: white;
+}
+
+/* Styling for labels */
+QLabel {
+    font-size: 18px;
+    color: #1E415F;
+}
+
+#algoDescription{
+    color: #828282;
+    background-color: white;
+    font-size: 14px;
+    padding: 10px 20px;
+    border: 1px solid #828282;
+}
+
+/* Styling for combo box */
+QComboBox {
+    color: #828282;
+    background-color: white;
+    font-size: 14px;
+    padding: 10px 20px;
+    border: 1px solid #828282;
+}
+
+/* Styling for bars */
+#barsLayout{
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
+}
+
+#barsLayout QLabel{
+
+}
