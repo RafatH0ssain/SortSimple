@@ -43,6 +43,18 @@ MainWindow::MainWindow(QWidget *parent)
     algorithmSelector->addItem("Quick Sort");
     algorithmSelector->addItem("Selection Sort");
 
+    int fontIdAll = QFontDatabase::addApplicationFont("Nasa21-l23X.ttf");
+    if (fontIdAll == -1) {
+        qWarning() << "Failed to load font!";
+        return;
+    }
+    QString fontFamilyAll = QFontDatabase::applicationFontFamilies(fontIdAll).at(0);
+    QFont fontAll(fontFamilyAll);
+    algorithmSelector->setFont(fontAll);
+    startButton->setFont(fontAll);
+    resetButton->setFont(fontAll);
+    statusLabel->setFont(fontAll);
+
     // Connect signals to slots
     connect(startButton, &QPushButton::clicked, this, &MainWindow::startSorting);
     connect(resetButton, &QPushButton::clicked, this, &MainWindow::resetSorting);
@@ -65,8 +77,17 @@ void MainWindow::resetSorting() {
     // Stop the timer
     animationTimer->stop();
 
+    int fontIdAll = QFontDatabase::addApplicationFont("Nasa21-l23X.ttf");
+    if (fontIdAll == -1) {
+        qWarning() << "Failed to load font!";
+        return;
+    }
+    QString fontFamilyAll = QFontDatabase::applicationFontFamilies(fontIdAll).at(0);
+    QFont fontAll(fontFamilyAll);
+
     // Reset the status label
     statusLabel->setText("Select an algorithm and start");
+    statusLabel->setFont(fontAll);
 
     // Reset the algorithm selection (optional)
     algorithmSelector->setCurrentIndex(0);
@@ -79,7 +100,7 @@ void MainWindow::resetSorting() {
 void MainWindow::setupUI() {
 
     // Load the custom font from the resources or file system
-    int fontIdAll = QFontDatabase::addApplicationFont("D:/projects/SortSimple/SortSimple/Nasa21-l23X.ttf");
+    int fontIdAll = QFontDatabase::addApplicationFont("Nasa21-l23X.ttf");
     if (fontIdAll == -1) {
         qWarning() << "Failed to load font!";
         return;
@@ -92,15 +113,13 @@ void MainWindow::setupUI() {
     QFont fontAll(fontFamilyAll);
     qApp->setFont(fontAll);
 
-    int fontIdAcc = QFontDatabase::addApplicationFont("D:/projects/SortSimple/SortSimple/Debrosee-ALPnL.ttf");
+    int fontIdAcc = QFontDatabase::addApplicationFont("SuperComic-qZg62.ttf");
     if (fontIdAcc == -1) {
         qWarning() << "Failed to load font!";
         return;
     }
 
     QString fontFamilyAcc = QFontDatabase::applicationFontFamilies(fontIdAcc).at(0);
-
-    // Or apply it to a specific widget, for example:
     QFont fontAcc(fontFamilyAcc);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
@@ -151,7 +170,7 @@ void MainWindow::setupUI() {
     // Store bars in a container for easy manipulation
     for (int value : data) {
         QLabel *bar = new QLabel;
-        bar->setStyleSheet("background-color: blue;");
+        bar->setStyleSheet("background-color: blue; color: white; font-weight: thin");
         bar->setText(QString::number(value));
         bar->setFont(fontAcc);
         bar->setAlignment(Qt::AlignCenter);
