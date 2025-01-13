@@ -21,10 +21,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Populate dropdown with sorting algorithms
     algorithmSelector->addItem("Bubble Sort");
-    algorithmSelector->addItem("Quick Sort");
     algorithmSelector->addItem("Merge Sort");
     algorithmSelector->addItem("Insertion Sort");
-    algorithmSelector->addItem("Selection Sort"); // Placeholder, implement later
+    algorithmSelector->addItem("Selection Sort");
+    algorithmSelector->addItem("Quick Sort");
 
     // Connect signals to slots
     connect(startButton, &QPushButton::clicked, this, &MainWindow::startSorting);
@@ -42,7 +42,7 @@ void MainWindow::resetSorting() {
     // Reset the visualization: all bars back to blue
     for (int i = 0; i < bars.size(); ++i) {
         bars[i]->setText(QString::number(data[i]));  // Restore original data value on each bar
-        bars[i]->setStyleSheet("background-color: blue;");  // Set all bars to blue
+        bars[i]->setStyleSheet("background-color: blue;");
     }
 
     // Stop the timer
@@ -52,10 +52,10 @@ void MainWindow::resetSorting() {
     statusLabel->setText("Select an algorithm and start");
 
     // Reset the algorithm selection (optional)
-    algorithmSelector->setCurrentIndex(0);  // Set to the default index, or any index you prefer
+    algorithmSelector->setCurrentIndex(0);
 
     // Reset all sorting state variables
-    currentIndex = 0;  // Reset the step index to 0
+    currentIndex = 0;
 }
 
 
@@ -180,7 +180,6 @@ void MainWindow::bubbleSortStep() {
                 return; // Exit to allow the timer to trigger the next step
             }
             ++j; // Move to the next pair
-            // bubbleSortStep(); // Continue to the next iteration
         } else {
             if (!swapped) {
                 // If no swaps were made, the sorting is complete
@@ -240,8 +239,13 @@ void MainWindow::quickSortStep() {
                 bars[left]->setText(QString::number(data[left]));
                 bars[right]->setText(QString::number(data[right]));
 
+                // Temporarily color swapped bars red
+                bars[left]->setStyleSheet("background-color: red;");
+                bars[right]->setStyleSheet("background-color: red;");
+                QCoreApplication::processEvents();
+
                 // Restore colors after a short delay
-                QTimer::singleShot(700, this, [this, left = left, right = right] {
+                QTimer::singleShot(1000, this, [this, left = left, right = right] {
                     bars[left]->setStyleSheet("background-color: blue;");
                     bars[right]->setStyleSheet("background-color: blue;");
                     QCoreApplication::processEvents();
@@ -258,10 +262,14 @@ void MainWindow::quickSortStep() {
             bars[left]->setText(QString::number(data[left]));
             bars[pivotIndex]->setText(QString::number(data[pivotIndex]));
 
-            // Highlight pivot for a moment before returning to normal color
-            QTimer::singleShot(300, this, [this, left = left, pivotIndex = pivotIndex] {
+            // Highlight final pivot position temporarily before resetting color
+            bars[left]->setStyleSheet("background-color: red;");
+            bars[pivotIndex]->setStyleSheet("background-color: red;");
+            QCoreApplication::processEvents();
+
+            QTimer::singleShot(1000, this, [this, left = left, pivotIndex = pivotIndex] {
+                bars[left]->setStyleSheet("background-color: blue;");
                 bars[pivotIndex]->setStyleSheet("background-color: blue;");
-                bars[left]->setStyleSheet("background-color: red;"); // Final pivot position
                 QCoreApplication::processEvents();
             });
 
@@ -279,11 +287,14 @@ void MainWindow::quickSortStep() {
     }
 
     if(isSorted()){
-        animationTimer->stop();
-        statusLabel->setText("Sorting complete!");
-        for (QLabel* bar : bars) {
-            bar->setStyleSheet("background-color: green;"); // Final color for sorted bars
-        }
+
+        QTimer::singleShot(2000, this, [this] {
+            animationTimer->stop();
+            statusLabel->setText("Sorting complete!");
+            for (QLabel* bar : bars) {
+                bar->setStyleSheet("background-color: green;");
+            }
+        });
 
         // Reset static variables for future sorting
         stack.clear();
@@ -293,7 +304,7 @@ void MainWindow::quickSortStep() {
 
 void MainWindow::mergeSortStep() {
     static QVector<QPair<int, int>> stack;  // Stack to store sub-array ranges
-    static QVector<int> tempData;           // Temporary array for merging
+    static QVector<int> tempData;
     static int start = -1, end = -1, mid = -1;
 
     // Check if sorting is complete
@@ -340,8 +351,8 @@ void MainWindow::mergeSortStep() {
                 bars[i]->setStyleSheet("background-color: red;");
             }
         }
-        QCoreApplication::processEvents();  // Ensure UI updates
-        return;  // Exit to allow the next event loop to execute
+        QCoreApplication::processEvents();  // UI update
+        return;
     }
 
     // Perform merge step once the range is split
@@ -390,7 +401,7 @@ void MainWindow::mergeSortStep() {
         for (int i = start; i <= end; ++i) {
             if (i >= 0 && i < bars.size()) {
                 bars[i]->setText(QString::number(data[i]));
-                bars[i]->setStyleSheet("background-color: blue;");  // Reset the bar color after merge
+                bars[i]->setStyleSheet("background-color: blue;");
             }
         }
 
@@ -398,14 +409,14 @@ void MainWindow::mergeSortStep() {
 
         // Reset indices to process the next range
         start = end = mid = -1;  // Reset after a merge step
-        return;  // Exit to allow the next event loop to execute
+        return;
     }
 }
 
 void MainWindow::insertionSortStep() {
-    static int i = 1;  // Start from the second element
-    static int j = -1; // Initialize outside the loop to use in both conditions
-    static int key = -1; // Initialize outside the loop to use in both conditions
+    static int i = 1;
+    static int j = -1;
+    static int key = -1;
 
     // Base case: if sorting is done, stop the timer and set status
     if (i >= data.size()) {
@@ -448,7 +459,7 @@ void MainWindow::insertionSortStep() {
         bars[j]->setText(QString::number(data[j]));
 
         --j; // Move to the next element to the left
-        return; // Exit and wait for the next step to proceed
+        return;
     } else {
         // Insert the key at the correct position
         data[j + 1] = key;
