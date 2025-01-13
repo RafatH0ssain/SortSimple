@@ -8,6 +8,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QApplication>
+#include <QResizeEvent>
+#include <QFontDatabase>
 
 // Applies CSS styling to the window
 void MainWindow::applyStyles() {
@@ -73,9 +75,34 @@ void MainWindow::resetSorting() {
     currentIndex = 0;
 }
 
-
 // Set up the UI
 void MainWindow::setupUI() {
+
+    // Load the custom font from the resources or file system
+    int fontIdAll = QFontDatabase::addApplicationFont("D:/projects/SortSimple/SortSimple/Nasa21-l23X.ttf");
+    if (fontIdAll == -1) {
+        qWarning() << "Failed to load font!";
+        return;
+    }
+
+    // Get the font family name
+    QString fontFamilyAll = QFontDatabase::applicationFontFamilies(fontIdAll).at(0);
+
+    // Set the font for the whole application
+    QFont fontAll(fontFamilyAll);
+    qApp->setFont(fontAll);
+
+    int fontIdAcc = QFontDatabase::addApplicationFont("D:/projects/SortSimple/SortSimple/Debrosee-ALPnL.ttf");
+    if (fontIdAcc == -1) {
+        qWarning() << "Failed to load font!";
+        return;
+    }
+
+    QString fontFamilyAcc = QFontDatabase::applicationFontFamilies(fontIdAcc).at(0);
+
+    // Or apply it to a specific widget, for example:
+    QFont fontAcc(fontFamilyAcc);
+
     QVBoxLayout *mainLayout = new QVBoxLayout;
 
     // All layout
@@ -108,29 +135,32 @@ void MainWindow::setupUI() {
     QHBoxLayout *descriptionLayout = new QHBoxLayout;
     QLabel *paragraphLabel = new QLabel(this);
     paragraphLabel->setText("<p>This is placeholder text.</p>");
+    paragraphLabel->setFont(fontAll);
     paragraphLabel->setObjectName("algoDescription");
     descriptionLayout->addWidget(paragraphLabel);
 
     mainLayout->addWidget(headerContainer);
     mainLayout->addLayout(controlsLayout);
     mainLayout->addWidget(statusLabel);
-    mainLayout->addLayout(descriptionLayout);
 
     // Generate random data for bars
     data = {23, 41, 25, 54, 18, 14, 9, 10};
     QHBoxLayout *barsLayout = new QHBoxLayout;
     barsLayout->setObjectName("barsLayout");
+
+    // Store bars in a container for easy manipulation
     for (int value : data) {
         QLabel *bar = new QLabel;
         bar->setStyleSheet("background-color: blue;");
-        bar->setFixedSize(80, 80);
         bar->setText(QString::number(value));
+        bar->setFont(fontAcc);
         bar->setAlignment(Qt::AlignCenter);
         barsLayout->addWidget(bar);
         bars.push_back(bar);
     }
 
     mainLayout->addLayout(barsLayout);
+    mainLayout->addLayout(descriptionLayout);
     centralWidget->setLayout(mainLayout);
     setCentralWidget(centralWidget);
 
@@ -146,6 +176,23 @@ void MainWindow::setupUI() {
     footerLayout->addWidget(footerText);
 
     mainLayout->addWidget(footerContainer);
+}
+
+// Resize event to dynamically adjust bar size based on window size
+void MainWindow::resizeEvent(QResizeEvent *event) {
+    QMainWindow::resizeEvent(event);
+
+    // Get the width of the window minus the margins (adjust if needed)
+    int windowWidth = event->size().width();
+    int barCount = bars.size();
+
+    // Calculate the width of each bar based on the window width
+    int barWidth = windowWidth / (barCount + 2);
+
+    // Adjust the size of each bar dynamically
+    for (int i = 0; i < barCount; ++i) {
+        bars[i]->setFixedSize(barWidth, 100);
+    }
 }
 
 // Start sorting animation
