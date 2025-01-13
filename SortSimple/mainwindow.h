@@ -41,6 +41,7 @@ private:
     QPushButton *startButton;
     QPushButton *resetButton;
     QLabel *statusLabel;
+    QLabel *paragraphLabel;
 
     std::vector<int> data;       // Array to sort
     std::vector<QLabel *> bars;  // Bar widgets for visualization
