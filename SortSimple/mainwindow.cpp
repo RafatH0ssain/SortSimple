@@ -154,7 +154,7 @@ void MainWindow::setupUI() {
     controlsLayout->addWidget(resetButton);
 
     QHBoxLayout *descriptionLayout = new QHBoxLayout;
-    QLabel *paragraphLabel = new QLabel(this);
+    paragraphLabel = new QLabel(this);
     paragraphLabel->setText("<p>This is placeholder text.</p>");
     paragraphLabel->setFont(fontAll);
     paragraphLabel->setObjectName("algoDescription");
@@ -220,28 +220,37 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
 void MainWindow::startSorting() {
     QString selectedAlgorithm = algorithmSelector->currentText();
     resetBool = false;
+
     if (selectedAlgorithm == "Bubble Sort") {
         statusLabel->setText("Sorting using Bubble Sort...");
+        paragraphLabel->setText("<p>Bubble Sort repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order. For this array: {23, 41, 25, 54, 18, 14, 9, 10}, the algorithm will take the following steps:</p>"
+                                "<p>1. First pass: Compare each adjacent pair and swap if necessary. The algorithm compares 23 and 41, then 41 and 25, swapping these to get {23, 25, 41, 54, 18, 14, 9, 10}. The next swaps will continue through the rest of the array.</p>"
+                                "<p>2. Second pass: After the first pass, the largest element (54) has 'bubbled' to the end. The algorithm repeats the process for the remaining unsorted part of the list, gradually moving the next largest element to its correct position.</p>"
+                                "<p>3. This process continues until no more swaps are needed, meaning the array is fully sorted. If no swaps are made in a pass, the algorithm stops early, marking the sorting process as complete.</p>");
         currentIndex = 0;
         animationTimer->start(1000);
     }
     else if (selectedAlgorithm == "Quick Sort"){
         statusLabel->setText("Sorting using Quick Sort...");
+        paragraphLabel->setText("<p>Quick Sort works by selecting a pivot element and partitioning the array around the pivot, recursively sorting the subarrays.</p>");
         currentIndex = 0;
         animationTimer->start(1000);
     }
     else if (selectedAlgorithm == "Merge Sort"){
         statusLabel->setText("Sorting using Merge Sort...");
+        paragraphLabel->setText("<p>Merge Sort divides the array into two halves, recursively sorts each half, and then merges them back together.</p>");
         currentIndex = 0;
         animationTimer->start(1000);
     }
     else if (selectedAlgorithm == "Insertion Sort"){
         statusLabel->setText("Sorting using Insertion Sort...");
+        paragraphLabel->setText("<p>Insertion Sort builds the final sorted array one element at a time by repeatedly picking the next element and inserting it into the sorted part of the array.</p>");
         currentIndex = 0;
         animationTimer->start(1000);
     }
     else {
         statusLabel->setText("Sorting using Selection Sort...");
+        paragraphLabel->setText("<p>Selection Sort repeatedly selects the smallest element from the unsorted part of the array and swaps it with the first unsorted element.</p>");
         currentIndex = 0;
         animationTimer->start(1000);
     }
