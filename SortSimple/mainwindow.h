@@ -31,6 +31,7 @@ private:
     void selectionSortStep(); // Step for selection sort animation
     bool isSorted();
     void resetSorting();
+    void applyStyles();
 
     QWidget *centralWidget;
     QComboBox *algorithmSelector;
