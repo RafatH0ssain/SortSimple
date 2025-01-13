@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     algorithmSelector->addItem("Quick Sort");
     algorithmSelector->addItem("Merge Sort");
     algorithmSelector->addItem("Insertion Sort");
-    algorithmSelector->addItem("Selection Sort"); // Placeholder, implement later
+    algorithmSelector->addItem("Selection Sort");
 
     // Connect signals to slots
     connect(startButton, &QPushButton::clicked, this, &MainWindow::startSorting);
@@ -114,7 +114,9 @@ void MainWindow::startSorting() {
         animationTimer->start(1000);
     }
     else {
-        statusLabel->setText("Algorithm not implemented yet.");
+        statusLabel->setText("Sorting using Selection Sort...");
+        currentIndex = 0;
+        animationTimer->start(1000);
     }
 }
 
@@ -131,6 +133,9 @@ void MainWindow::performStep() {
     }
     else if ((algorithmSelector->currentText() == "Insertion Sort")) {
         insertionSortStep();
+    }
+    else{
+        selectionSortStep();
     }
 }
 
@@ -460,6 +465,74 @@ void MainWindow::insertionSortStep() {
         key = -1; // Reset key
         j = -1;  // Reset j
     }
+
+    QCoreApplication::processEvents();  // Ensure UI updates
+}
+
+void MainWindow::selectionSortStep() {
+    static int i = 0;  // Start from the first element
+    static int min_idx = -1; // To store the index of the current minimum element
+
+    // Base case: if sorting is done, stop the timer and set status
+    if (i >= data.size() - 1) {
+        animationTimer->stop();
+        statusLabel->setText("Sorting complete!");
+        for (QLabel* bar : bars) {
+            bar->setStyleSheet("background-color: green;");  // Final color for sorted bars
+        }
+        return;
+    }
+
+    // Reset all bars' colors to blue before the new comparison
+    for (int k = 0; k < data.size(); ++k) {
+        bars[k]->setStyleSheet("background-color: blue;");
+    }
+
+    // Highlight the current element in the unsorted portion
+    bars[i]->setStyleSheet("background-color: yellow;");
+
+    // Initialize min_idx at the start of the unsorted portion
+    if (min_idx == -1) {
+        min_idx = i;
+    }
+
+    // Iterate through the unsorted portion to find the actual minimum element
+    if (min_idx == i) {
+        // Highlight the element being compared
+        for (int j = i + 1; j < data.size(); ++j) {
+            bars[j]->setStyleSheet("background-color: red;");
+        }
+        QCoreApplication::processEvents();
+
+        for (int j = i + 1; j < data.size(); ++j) {
+            if (data[j] < data[min_idx]) {
+                min_idx = j; // Update min_idx if a smaller element is found
+            }
+        }
+    }
+
+    // Swap if necessary (after the full loop for minimum element)
+    if (min_idx != i) {
+        // Highlight the bars that are being swapped
+        bars[i]->setStyleSheet("background-color: red;");
+        bars[min_idx]->setStyleSheet("background-color: red;");
+        QCoreApplication::processEvents();
+
+        // Swap elements
+        std::swap(data[i], data[min_idx]);
+
+        // Update visuals
+        bars[i]->setText(QString::number(data[i]));
+        bars[min_idx]->setText(QString::number(data[min_idx]));
+
+        // Reset colors
+        bars[i]->setStyleSheet("background-color: blue;");
+        bars[min_idx]->setStyleSheet("background-color: blue;");
+    }
+
+    // Move to the next element
+    ++i;
+    min_idx = -1;  // Reset min_idx for the next round
 
     QCoreApplication::processEvents();  // Ensure UI updates
 }
