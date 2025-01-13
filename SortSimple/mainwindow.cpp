@@ -5,6 +5,20 @@
 #include <QTimer>
 #include <QRandomGenerator>
 #include <qcoreapplication.h>
+#include <QFile>
+#include <QTextStream>
+#include <QApplication>
+
+// Applies CSS styling to the window
+void MainWindow::applyStyles() {
+    QFile file("styles.css");  // Use the path to your external CSS file
+    if (file.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream stream(&file);
+        QString css = stream.readAll();
+        qApp->setStyleSheet(css);  // Apply the stylesheet to the whole app
+    }
+    file.close();
+}
 
 // Constructor
 MainWindow::MainWindow(QWidget *parent)
@@ -17,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
     currentIndex(0),
     animationTimer(new QTimer(this)) {
 
+    applyStyles();
     setupUI();
 
     // Populate dropdown with sorting algorithms
