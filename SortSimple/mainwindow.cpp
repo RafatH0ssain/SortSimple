@@ -78,7 +78,28 @@ void MainWindow::resetSorting() {
 void MainWindow::setupUI() {
     QVBoxLayout *mainLayout = new QVBoxLayout;
 
-    // Dropdown and Start button layout
+    // All layout
+    QWidget *headerContainer = new QWidget(this);
+    headerContainer->setObjectName("headerContainer");
+
+    QVBoxLayout *headerLayout = new QVBoxLayout(headerContainer);
+    headerContainer->setLayout(headerLayout);
+    QLabel *h1 = new QLabel(this);
+    QLabel *h2 = new QLabel(this);
+    QLabel *p = new QLabel(this);
+    h1->setObjectName("h1");
+    h2->setObjectName("h2");
+    p->setObjectName("p");
+    h1->setAlignment(Qt::AlignCenter);
+    h2->setAlignment(Qt::AlignCenter);
+    p->setAlignment(Qt::AlignCenter);
+    h1->setText("SortSimple - Dynamic Sorting Visualization");
+    h2->setText("An interactive app that visually demonstrates the step-by-step process of sorting algorithms like Bubble Sort, Merge Sort, and Quick Sort,\n offering a hands-on way to understand algorithmic behavior.");
+    p->setText("<p>Project contributors:</p>" "<ul><li>Nafisah Nubah</li><li>Muhammad Rafat Hossain</li></ul>");
+    headerLayout->addWidget(h1);
+    headerLayout->addWidget(h2);
+    headerLayout->addWidget(p);
+
     QHBoxLayout *controlsLayout = new QHBoxLayout;
     controlsLayout->addWidget(algorithmSelector);
     controlsLayout->addWidget(startButton);
@@ -90,6 +111,7 @@ void MainWindow::setupUI() {
     paragraphLabel->setObjectName("algoDescription");
     descriptionLayout->addWidget(paragraphLabel);
 
+    mainLayout->addWidget(headerContainer);
     mainLayout->addLayout(controlsLayout);
     mainLayout->addWidget(statusLabel);
     mainLayout->addLayout(descriptionLayout);
@@ -111,6 +133,19 @@ void MainWindow::setupUI() {
     mainLayout->addLayout(barsLayout);
     centralWidget->setLayout(mainLayout);
     setCentralWidget(centralWidget);
+
+    // Footer
+    QWidget *footerContainer = new QWidget(this);
+    footerContainer->setObjectName("footerContainer");
+
+    QVBoxLayout *footerLayout = new QVBoxLayout(footerContainer);
+    footerContainer->setLayout(footerLayout);
+    QLabel *footerText = new QLabel(this);
+    footerText->setObjectName("footerText");
+    footerText->setText("© 2025 SortSimple - All rights reserved.");
+    footerLayout->addWidget(footerText);
+
+    mainLayout->addWidget(footerContainer);
 }
 
 // Start sorting animation
