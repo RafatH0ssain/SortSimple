@@ -38,11 +38,12 @@ MainWindow::~MainWindow() {}
 void MainWindow::resetSorting() {
     // Reset the data to its initial unsorted state
     data = {23, 41, 25, 54, 18, 14, 9, 10};
+    resetBool = true;
 
     // Reset the visualization: all bars back to blue
     for (int i = 0; i < bars.size(); ++i) {
         bars[i]->setText(QString::number(data[i]));  // Restore original data value on each bar
-        bars[i]->setStyleSheet("background-color: blue;");
+        bars[i]->setStyleSheet("background-color: blue;");  // Reset the color of the bars to blue
     }
 
     // Stop the timer
@@ -56,8 +57,8 @@ void MainWindow::resetSorting() {
 
     // Reset all sorting state variables
     currentIndex = 0;
-}
 
+}
 
 // Set up the UI
 void MainWindow::setupUI() {
@@ -93,6 +94,7 @@ void MainWindow::setupUI() {
 // Start sorting animation
 void MainWindow::startSorting() {
     QString selectedAlgorithm = algorithmSelector->currentText();
+    resetBool = false;
     if (selectedAlgorithm == "Bubble Sort") {
         statusLabel->setText("Sorting using Bubble Sort...");
         currentIndex = 0;
@@ -154,6 +156,19 @@ void MainWindow::bubbleSortStep() {
     static int j = 0; // Inner loop variable
     static bool swapped = false;
 
+    if (resetBool) {
+        j = 0;
+        i = 0;
+        swapped = false;
+        int newBars[] = {23, 41, 25, 54, 18, 14, 9, 10};
+        swapped = !swapped;
+        resetBool = !resetBool;
+        for (int i = 0; i < 8; i++) {
+            bars[i] -> setText(QString::number(newBars[i]));
+        }
+
+    }
+
     if (i < data.size()) {
         if (j < data.size() - 1 - i) {
             if (data[j] > data[j + 1]) {
@@ -190,6 +205,8 @@ void MainWindow::bubbleSortStep() {
                 // If no swaps were made, the sorting is complete
                 animationTimer->stop();
                 statusLabel->setText("Sorting complete!");
+                i = 0;
+                j = 0;
 
                 for (auto* bar : bars) {
                     bar->setStyleSheet("background-color: green;");
@@ -328,8 +345,9 @@ void MainWindow::mergeSortStep() {
     }
 
     // Initialize stack with the full range during the first call
-    if (stack.isEmpty()) {
+    if (stack.isEmpty() || resetBool) {
         stack.push_back({0, data.size() - 1});
+        resetBool = false;
     }
 
     // If no current partitioning step is active, set up a new range
@@ -524,7 +542,7 @@ void MainWindow::selectionSortStep() {
 
     // Swap if necessary (after the full loop for minimum element)
     if (min_idx != i) {
-        // Highlight the bars that are being swapped
+        // Highlight the bars that are being swapped (red before swap)
         bars[i]->setStyleSheet("background-color: red;");
         bars[min_idx]->setStyleSheet("background-color: red;");
         QCoreApplication::processEvents();
@@ -536,9 +554,13 @@ void MainWindow::selectionSortStep() {
         bars[i]->setText(QString::number(data[i]));
         bars[min_idx]->setText(QString::number(data[min_idx]));
 
-        // Reset colors
-        bars[i]->setStyleSheet("background-color: blue;");
-        bars[min_idx]->setStyleSheet("background-color: blue;");
+        // Keep them red for a moment after the swap
+        QTimer::singleShot(700, this, [this, i = i, min_idx = min_idx] {
+            // Reset colors to blue after the swap
+            bars[i]->setStyleSheet("background-color: blue;");
+            bars[min_idx]->setStyleSheet("background-color: blue;");
+            QCoreApplication::processEvents();
+        });
     }
 
     // Move to the next element
@@ -547,3 +569,4 @@ void MainWindow::selectionSortStep() {
 
     QCoreApplication::processEvents();  // Ensure UI updates
 }
+

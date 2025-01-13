@@ -21,6 +21,7 @@ public:
 private slots:
     void startSorting(); // Slot to handle sorting
     void performStep();  // Slot to handle animation steps
+    void resetSorting();  // Slot for resetting the sorting
 
 private:
     void setupUI();      // Function to set up the UI
@@ -30,7 +31,6 @@ private:
     void insertionSortStep(); // Step for insertion sort animation
     void selectionSortStep(); // Step for selection sort animation
     bool isSorted();
-    void resetSorting();
 
     QWidget *centralWidget;
     QComboBox *algorithmSelector;
@@ -42,6 +42,7 @@ private:
     std::vector<QLabel *> bars;  // Bar widgets for visualization
     int currentIndex;            // Index for sorting steps
     int currentSwapIndex;
+    bool resetBool = false;
     QTimer *animationTimer;      // Timer for step animation
 };
 
