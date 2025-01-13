@@ -28,6 +28,7 @@ private:
     void quickSortStep(); // Step for quick sort animation
     void mergeSortStep(); // Step for merge sort animation
     void insertionSortStep(); // Step for insertion sort animation
+    void selectionSortStep(); // Step for selection sort animation
     bool isSorted();
     void resetSorting();
 
