@@ -84,12 +84,20 @@ void MainWindow::setupUI() {
     controlsLayout->addWidget(startButton);
     controlsLayout->addWidget(resetButton);
 
+    QHBoxLayout *descriptionLayout = new QHBoxLayout;
+    QLabel *paragraphLabel = new QLabel(this);
+    paragraphLabel->setText("<p>This is placeholder text.</p>");
+    paragraphLabel->setObjectName("algoDescription");
+    descriptionLayout->addWidget(paragraphLabel);
+
     mainLayout->addLayout(controlsLayout);
     mainLayout->addWidget(statusLabel);
+    mainLayout->addLayout(descriptionLayout);
 
     // Generate random data for bars
     data = {23, 41, 25, 54, 18, 14, 9, 10};
     QHBoxLayout *barsLayout = new QHBoxLayout;
+    barsLayout->setObjectName("barsLayout");
     for (int value : data) {
         QLabel *bar = new QLabel;
         bar->setStyleSheet("background-color: blue;");
