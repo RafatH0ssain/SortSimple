@@ -113,11 +113,8 @@ void MainWindow::setupUI() {
     QFont fontAll(fontFamilyAll);
     qApp->setFont(fontAll);
 
-<<<<<<< HEAD
     int fontIdAcc = QFontDatabase::addApplicationFont("SuperComic-qZg62.ttf");
-=======
-    int fontIdAcc = QFontDatabase::addApplicationFont("Debrosee-ALPnL.ttf");
->>>>>>> 2a06b1a28e26df81fa01b0bcc6f4d4e1b2e885fb
+
     if (fontIdAcc == -1) {
         qWarning() << "Failed to load font!";
         return;
