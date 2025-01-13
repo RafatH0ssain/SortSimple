@@ -79,7 +79,7 @@ void MainWindow::resetSorting() {
 void MainWindow::setupUI() {
 
     // Load the custom font from the resources or file system
-    int fontIdAll = QFontDatabase::addApplicationFont("D:/projects/SortSimple/SortSimple/Nasa21-l23X.ttf");
+    int fontIdAll = QFontDatabase::addApplicationFont("Nasa21-l23X.ttf");
     if (fontIdAll == -1) {
         qWarning() << "Failed to load font!";
         return;
@@ -92,7 +92,7 @@ void MainWindow::setupUI() {
     QFont fontAll(fontFamilyAll);
     qApp->setFont(fontAll);
 
-    int fontIdAcc = QFontDatabase::addApplicationFont("D:/projects/SortSimple/SortSimple/Debrosee-ALPnL.ttf");
+    int fontIdAcc = QFontDatabase::addApplicationFont("Debrosee-ALPnL.ttf");
     if (fontIdAcc == -1) {
         qWarning() << "Failed to load font!";
         return;
@@ -121,8 +121,8 @@ void MainWindow::setupUI() {
     h2->setAlignment(Qt::AlignCenter);
     p->setAlignment(Qt::AlignCenter);
     h1->setText("SortSimple - Dynamic Sorting Visualization");
-    h2->setText("An interactive app that visually demonstrates the step-by-step process of sorting algorithms like Bubble Sort, Merge Sort, and Quick Sort,\n offering a hands-on way to understand algorithmic behavior.");
-    p->setText("<p>Project contributors:</p>" "<ul><li>Nafisah Nubah</li><li>Muhammad Rafat Hossain</li></ul>");
+    h2->setText("An interactive app that visually demonstrates the step-by-step process of sorting algorithms like Bubble Sort, Merge Sort,\n and Quick Sort, offering a hands-on way to understand algorithmic behavior.");
+    p->setText("Project contributors: Nafisah Nubah, Muhammad Rafat Hossain");
     headerLayout->addWidget(h1);
     headerLayout->addWidget(h2);
     headerLayout->addWidget(p);
