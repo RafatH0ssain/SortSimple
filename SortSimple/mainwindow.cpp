@@ -5,6 +5,22 @@
 #include <QTimer>
 #include <QRandomGenerator>
 #include <qcoreapplication.h>
+#include <QFile>
+#include <QTextStream>
+#include <QApplication>
+#include <QResizeEvent>
+#include <QFontDatabase>
+
+// Applies CSS styling to the window
+void MainWindow::applyStyles() {
+    QFile file("styles.css");  // Use the path to your external CSS file
+    if (file.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream stream(&file);
+        QString css = stream.readAll();
+        qApp->setStyleSheet(css);  // Apply the stylesheet to the whole app
+    }
+    file.close();
+}
 
 // Constructor
 MainWindow::MainWindow(QWidget *parent)
@@ -17,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
     currentIndex(0),
     animationTimer(new QTimer(this)) {
 
+    applyStyles();
     setupUI();
 
     // Populate dropdown with sorting algorithms
@@ -25,6 +42,18 @@ MainWindow::MainWindow(QWidget *parent)
     algorithmSelector->addItem("Insertion Sort");
     algorithmSelector->addItem("Quick Sort");
     algorithmSelector->addItem("Selection Sort");
+
+    int fontIdAll = QFontDatabase::addApplicationFont("Nasa21-l23X.ttf");
+    if (fontIdAll == -1) {
+        qWarning() << "Failed to load font!";
+        return;
+    }
+    QString fontFamilyAll = QFontDatabase::applicationFontFamilies(fontIdAll).at(0);
+    QFont fontAll(fontFamilyAll);
+    algorithmSelector->setFont(fontAll);
+    startButton->setFont(fontAll);
+    resetButton->setFont(fontAll);
+    statusLabel->setFont(fontAll);
 
     // Connect signals to slots
     connect(startButton, &QPushButton::clicked, this, &MainWindow::startSorting);
@@ -49,46 +78,142 @@ void MainWindow::resetSorting() {
     // Stop the timer
     animationTimer->stop();
 
+    int fontIdAll = QFontDatabase::addApplicationFont("Nasa21-l23X.ttf");
+    if (fontIdAll == -1) {
+        qWarning() << "Failed to load font!";
+        return;
+    }
+    QString fontFamilyAll = QFontDatabase::applicationFontFamilies(fontIdAll).at(0);
+    QFont fontAll(fontFamilyAll);
+
     // Reset the status label
     statusLabel->setText("Select an algorithm and start");
+    statusLabel->setFont(fontAll);
 
     // Reset the algorithm selection (optional)
     algorithmSelector->setCurrentIndex(0);
 
     // Reset all sorting state variables
     currentIndex = 0;
-
 }
 
 // Set up the UI
 void MainWindow::setupUI() {
+
+    // Load the custom font from the resources or file system
+    int fontIdAll = QFontDatabase::addApplicationFont("Nasa21-l23X.ttf");
+    if (fontIdAll == -1) {
+        qWarning() << "Failed to load font!";
+        return;
+    }
+
+    // Get the font family name
+    QString fontFamilyAll = QFontDatabase::applicationFontFamilies(fontIdAll).at(0);
+
+    // Set the font for the whole application
+    QFont fontAll(fontFamilyAll);
+    qApp->setFont(fontAll);
+
+    int fontIdAcc = QFontDatabase::addApplicationFont("SuperComic-qZg62.ttf");
+
+    if (fontIdAcc == -1) {
+        qWarning() << "Failed to load font!";
+        return;
+    }
+
+    QString fontFamilyAcc = QFontDatabase::applicationFontFamilies(fontIdAcc).at(0);
+    QFont fontAcc(fontFamilyAcc);
+
     QVBoxLayout *mainLayout = new QVBoxLayout;
 
-    // Dropdown and Start button layout
+    // All layout
+    QWidget *headerContainer = new QWidget(this);
+    headerContainer->setObjectName("headerContainer");
+
+    QVBoxLayout *headerLayout = new QVBoxLayout(headerContainer);
+    headerContainer->setLayout(headerLayout);
+    QLabel *h1 = new QLabel(this);
+    QLabel *h2 = new QLabel(this);
+    QLabel *p = new QLabel(this);
+    h1->setObjectName("h1");
+    h2->setObjectName("h2");
+    p->setObjectName("p");
+    h1->setAlignment(Qt::AlignCenter);
+    h2->setAlignment(Qt::AlignCenter);
+    p->setAlignment(Qt::AlignCenter);
+    h1->setText("SortSimple - Dynamic Sorting Visualization");
+    h2->setText("An interactive app that visually demonstrates the step-by-step process of sorting algorithms like Bubble Sort, Merge Sort,\n and Quick Sort, offering a hands-on way to understand algorithmic behavior.");
+    p->setText("Project contributors: Nafisah Nubah, Muhammad Rafat Hossain");
+    headerLayout->addWidget(h1);
+    headerLayout->addWidget(h2);
+    headerLayout->addWidget(p);
+
     QHBoxLayout *controlsLayout = new QHBoxLayout;
     controlsLayout->addWidget(algorithmSelector);
     controlsLayout->addWidget(startButton);
     controlsLayout->addWidget(resetButton);
 
+    QHBoxLayout *descriptionLayout = new QHBoxLayout;
+    QLabel *paragraphLabel = new QLabel(this);
+    paragraphLabel->setText("<p>This is placeholder text.</p>");
+    paragraphLabel->setFont(fontAll);
+    paragraphLabel->setObjectName("algoDescription");
+    descriptionLayout->addWidget(paragraphLabel);
+
+    mainLayout->addWidget(headerContainer);
     mainLayout->addLayout(controlsLayout);
     mainLayout->addWidget(statusLabel);
 
     // Generate random data for bars
     data = {23, 41, 25, 54, 18, 14, 9, 10};
     QHBoxLayout *barsLayout = new QHBoxLayout;
+    barsLayout->setObjectName("barsLayout");
+
+    // Store bars in a container for easy manipulation
     for (int value : data) {
         QLabel *bar = new QLabel;
-        bar->setStyleSheet("background-color: blue;");
-        bar->setFixedSize(80, 80);
+        bar->setStyleSheet("background-color: blue; color: white; font-weight: thin");
         bar->setText(QString::number(value));
+        bar->setFont(fontAcc);
         bar->setAlignment(Qt::AlignCenter);
         barsLayout->addWidget(bar);
         bars.push_back(bar);
     }
 
     mainLayout->addLayout(barsLayout);
+    mainLayout->addLayout(descriptionLayout);
     centralWidget->setLayout(mainLayout);
     setCentralWidget(centralWidget);
+
+    // Footer
+    QWidget *footerContainer = new QWidget(this);
+    footerContainer->setObjectName("footerContainer");
+
+    QVBoxLayout *footerLayout = new QVBoxLayout(footerContainer);
+    footerContainer->setLayout(footerLayout);
+    QLabel *footerText = new QLabel(this);
+    footerText->setObjectName("footerText");
+    footerText->setText("© 2025 SortSimple - All rights reserved.");
+    footerLayout->addWidget(footerText);
+
+    mainLayout->addWidget(footerContainer);
+}
+
+// Resize event to dynamically adjust bar size based on window size
+void MainWindow::resizeEvent(QResizeEvent *event) {
+    QMainWindow::resizeEvent(event);
+
+    // Get the width of the window minus the margins (adjust if needed)
+    int windowWidth = event->size().width();
+    int barCount = bars.size();
+
+    // Calculate the width of each bar based on the window width
+    int barWidth = windowWidth / (barCount + 2);
+
+    // Adjust the size of each bar dynamically
+    for (int i = 0; i < barCount; ++i) {
+        bars[i]->setFixedSize(barWidth, 100);
+    }
 }
 
 // Start sorting animation

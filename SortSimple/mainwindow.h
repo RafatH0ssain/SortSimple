@@ -23,6 +23,9 @@ private slots:
     void performStep();  // Slot to handle animation steps
     void resetSorting();  // Slot for resetting the sorting
 
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
 private:
     void setupUI();      // Function to set up the UI
     void bubbleSortStep(); // Step for bubble sort animation
@@ -31,6 +34,7 @@ private:
     void insertionSortStep(); // Step for insertion sort animation
     void selectionSortStep(); // Step for selection sort animation
     bool isSorted();
+    void applyStyles();
 
     QWidget *centralWidget;
     QComboBox *algorithmSelector;
