@@ -22,6 +22,9 @@ private slots:
     void startSorting(); // Slot to handle sorting
     void performStep();  // Slot to handle animation steps
 
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
 private:
     void setupUI();      // Function to set up the UI
     void bubbleSortStep(); // Step for bubble sort animation
