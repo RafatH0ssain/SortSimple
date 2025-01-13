@@ -2,9 +2,39 @@
 
 /* General window styling */
 QMainWindow {
-    background-color: white;
+    background-color: #CFE9F6;
     font-family: Arial, sans-serif;
     color: #333;
+}
+
+#headerContainer{
+    background-color: #1E415F;
+    text-align: center;
+    padding: 10px;
+}
+
+#headerContainer > * {
+    padding: 20px;
+}
+
+#h1, #h2, #p{
+    color: white;
+    font-size: 22px;
+}
+
+#h1{
+    font-size: 40px;
+    font-weight: bold;
+}
+
+#footerContainer{
+    background-color: #1E415F;
+}
+
+#footerText{
+    color: white;
+    font-size: 18px;
+    padding: 15px 20px;
 }
 
 /* Styling for buttons */
