@@ -232,25 +232,37 @@ void MainWindow::startSorting() {
     }
     else if (selectedAlgorithm == "Quick Sort"){
         statusLabel->setText("Sorting using Quick Sort...");
-        paragraphLabel->setText("<p>Quick Sort works by selecting a pivot element and partitioning the array around the pivot, recursively sorting the subarrays.</p>");
+        paragraphLabel->setText("<p>Quick Sort selects a pivot element and partitions the array into elements less than or equal to the pivot and greater than the pivot. For the array {23, 41, 25, 54, 18, 14, 9, 10}:</p>"
+                                "<p>1. First partition: Choose last element (10) as pivot. Rearrange elements so all values ≤10 come before it. The array becomes {9, 10, 25, 54, 18, 14, 23, 41} with 10 in correct position.</p>"
+                                "<p>2. Recursively process left subarray {9} (already sorted) and right subarray {25,54,18,14,23,41}. New pivot 41 results in {25,23,18,14,41,54}.</p>"
+                                "<p>3. Repeat partitioning until all subarrays are single elements. Final sorted array emerges through recursive recombination of sorted partitions.</p>");
         currentIndex = 0;
         animationTimer->start(1000);
     }
     else if (selectedAlgorithm == "Merge Sort"){
         statusLabel->setText("Sorting using Merge Sort...");
-        paragraphLabel->setText("<p>Merge Sort divides the array into two halves, recursively sorts each half, and then merges them back together.</p>");
+        paragraphLabel->setText("<p>Merge Sort divides the array into halves, sorts them recursively, then merges sorted halves. For {23,41,25,54,18,14,9,10}:</p>"
+                                "<p>1. Split into [23,41,25,54] and [18,14,9,10]. Recursively split until single elements.</p>"
+                                "<p>2. Merge pairs: [23,41] & [25,54] become [23,25,41,54], [14,18] & [9,10] become [9,10,14,18].</p>"
+                                "<p>3. Final merge combines [23,25,41,54] and [9,10,14,18] by comparing elements sequentially, resulting in the sorted array.</p>");
         currentIndex = 0;
         animationTimer->start(1000);
     }
     else if (selectedAlgorithm == "Insertion Sort"){
         statusLabel->setText("Sorting using Insertion Sort...");
-        paragraphLabel->setText("<p>Insertion Sort builds the final sorted array one element at a time by repeatedly picking the next element and inserting it into the sorted part of the array.</p>");
+        paragraphLabel->setText("<p>Insertion Sort builds the sorted array by inserting one element at a time. Starting with {23,41,25,54,18,14,9,10}:</p>"
+                                "<p>1. First element (23) is sorted. Insert 41 → {23,41}. Insert 25 → {23,25,41}. Insert 54 → {23,25,41,54}.</p>"
+                                "<p>2. Insert 18: Shift elements 23-54 right to make space → {18,23,25,41,54}. Continue with 14 → {14,18,23,25,41,54}.</p>"
+                                "<p>3. Final insertions place 9 and 10 at the beginning through successive shifts, completing the sort.</p>");
         currentIndex = 0;
         animationTimer->start(1000);
     }
     else {
         statusLabel->setText("Sorting using Selection Sort...");
-        paragraphLabel->setText("<p>Selection Sort repeatedly selects the smallest element from the unsorted part of the array and swaps it with the first unsorted element.</p>");
+        paragraphLabel->setText("<p>Selection Sort finds the minimum element repeatedly. For {23,41,25,54,18,14,9,10}:</p>"
+                                "<p>1. First iteration: Find minimum (9 at index 6). Swap with first element → {9,41,25,54,18,14,23,10}.</p>"
+                                "<p>2. Second iteration: Find minimum in remaining elements (10 at index 7). Swap with second position → {9,10,25,54,18,14,23,41}.</p>"
+                                "<p>3. Continue selecting next smallest elements (14,18,23,...) and swap them into position until the array is fully sorted.</p>");
         currentIndex = 0;
         animationTimer->start(1000);
     }
