@@ -36,7 +36,7 @@ private:
     bool isSorted();
     void applyStyles();
 
-    QWidget *centralWidget;
+    QWidget *m_centralWidget;
     QComboBox *algorithmSelector;
     QPushButton *startButton;
     QPushButton *resetButton;

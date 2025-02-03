@@ -9,32 +9,23 @@
 #include <QTextStream>
 #include <QApplication>
 #include <QResizeEvent>
+#include <QScrollArea>
 #include <QFontDatabase>
-
-// Applies CSS styling to the window
-void MainWindow::applyStyles() {
-    QFile file("styles.css");  // Use the path to your external CSS file
-    if (file.open(QFile::ReadOnly | QFile::Text)) {
-        QTextStream stream(&file);
-        QString css = stream.readAll();
-        qApp->setStyleSheet(css);  // Apply the stylesheet to the whole app
-    }
-    file.close();
-}
 
 // Constructor
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
-    centralWidget(new QWidget(this)),
-    algorithmSelector(new QComboBox(this)),
-    startButton(new QPushButton("Start", this)),
-    resetButton(new QPushButton("Reset", this)),
-    statusLabel(new QLabel("Select an algorithm and start", this)),
-    currentIndex(0),
-    animationTimer(new QTimer(this)) {
+      m_centralWidget(new QWidget(this)),
+      algorithmSelector(new QComboBox(this)),
+      startButton(new QPushButton("Start", this)),
+      resetButton(new QPushButton("Reset", this)),
+      statusLabel(new QLabel("Select an algorithm and start", this)),
+      currentIndex(0),
+      animationTimer(new QTimer(this))
+{
 
-    applyStyles();
     setupUI();
+    setMinimumSize(800, 600);
 
     // Populate dropdown with sorting algorithms
     algorithmSelector->addItem("Bubble Sort");
@@ -44,7 +35,8 @@ MainWindow::MainWindow(QWidget *parent)
     algorithmSelector->addItem("Selection Sort");
 
     int fontIdAll = QFontDatabase::addApplicationFont("Nasa21-l23X.ttf");
-    if (fontIdAll == -1) {
+    if (fontIdAll == -1)
+    {
         qWarning() << "Failed to load font!";
         return;
     }
@@ -64,22 +56,25 @@ MainWindow::MainWindow(QWidget *parent)
 // Destructor
 MainWindow::~MainWindow() {}
 
-void MainWindow::resetSorting() {
+void MainWindow::resetSorting()
+{
     // Reset the data to its initial unsorted state
     data = {23, 41, 25, 54, 18, 14, 9, 10};
     resetBool = true;
 
     // Reset the visualization: all bars back to blue
-    for (int i = 0; i < bars.size(); ++i) {
-        bars[i]->setText(QString::number(data[i]));  // Restore original data value on each bar
-        bars[i]->setStyleSheet("background-color: blue;");  // Reset the color of the bars to blue
+    for (int i = 0; i < bars.size(); ++i)
+    {
+        bars[i]->setText(QString::number(data[i]));        // Restore original data value on each bar
+        bars[i]->setStyleSheet("background-color: blue;"); // Reset the color of the bars to blue
     }
 
     // Stop the timer
     animationTimer->stop();
 
     int fontIdAll = QFontDatabase::addApplicationFont("Nasa21-l23X.ttf");
-    if (fontIdAll == -1) {
+    if (fontIdAll == -1)
+    {
         qWarning() << "Failed to load font!";
         return;
     }
@@ -98,14 +93,24 @@ void MainWindow::resetSorting() {
 }
 
 // Set up the UI
-void MainWindow::setupUI() {
+void MainWindow::setupUI()
+{
+
+    QHBoxLayout *barsLayout = new QHBoxLayout;
+    barsLayout->setContentsMargins(10, 0, 10, 0);
+    barsLayout->setSpacing(4);
+    data = {23, 41, 25, 54, 18, 14, 9, 10};
+    barsLayout->setObjectName("barsLayout");
 
     // Load the custom font from the resources or file system
     int fontIdAll = QFontDatabase::addApplicationFont("Nasa21-l23X.ttf");
-    if (fontIdAll == -1) {
+    if (fontIdAll == -1)
+    {
         qWarning() << "Failed to load font!";
         return;
     }
+
+    statusLabel->setObjectName("statusLabel");
 
     // Get the font family name
     QString fontFamilyAll = QFontDatabase::applicationFontFamilies(fontIdAll).at(0);
@@ -116,7 +121,8 @@ void MainWindow::setupUI() {
 
     int fontIdAcc = QFontDatabase::addApplicationFont("SuperComic-qZg62.ttf");
 
-    if (fontIdAcc == -1) {
+    if (fontIdAcc == -1)
+    {
         qWarning() << "Failed to load font!";
         return;
     }
@@ -125,53 +131,136 @@ void MainWindow::setupUI() {
     QFont fontAcc(fontFamilyAcc);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
+    mainLayout->setContentsMargins(20, 15, 20, 15); // Keep existing
+    mainLayout->setSpacing(15);
 
-    // All layout
+    m_centralWidget->setStyleSheet("background: black;");  // Set entire app background to black
+
     QWidget *headerContainer = new QWidget(this);
     headerContainer->setObjectName("headerContainer");
+    headerContainer->setStyleSheet(
+        "background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #2A0944, stop:0.5 #3B185F, stop:1 #1ABC9C);"
+        "border-radius: 15px;"
+        "padding: 20px;"
+        "margin-bottom: 20px;"
+        "color: white;"  // Set default text color for all child elements
+        );
 
     QVBoxLayout *headerLayout = new QVBoxLayout(headerContainer);
-    headerContainer->setLayout(headerLayout);
+    headerLayout->setSpacing(8);  // Reduce spacing between elements
+    headerLayout->setContentsMargins(15, 15, 15, 15);  // Consistent internal padding
+
     QLabel *h1 = new QLabel(this);
     QLabel *h2 = new QLabel(this);
     QLabel *p = new QLabel(this);
-    h1->setObjectName("h1");
-    h2->setObjectName("h2");
-    p->setObjectName("p");
+
+    // Remove individual style sheets from labels and set alignment only
     h1->setAlignment(Qt::AlignCenter);
     h2->setAlignment(Qt::AlignCenter);
     p->setAlignment(Qt::AlignCenter);
-    h1->setText("SortSimple - Dynamic Sorting Visualization");
-    h2->setText("An interactive app that visually demonstrates the step-by-step process of sorting algorithms like Bubble Sort, Merge Sort,\n and Quick Sort, offering a hands-on way to understand algorithmic behavior.");
-    p->setText("Project contributors: Nafisah Nubah, Muhammad Rafat Hossain");
+
+    // Set text properties
+    h1->setText("<span style='font-size: 28px; font-weight: bold;'>SortSimple - Dynamic Sorting Visualization</span>");
+    h2->setText("<span style='font-size: 16px;'>An interactive app that visually demonstrates the step-by-step process of "
+                "sorting algorithms like Bubble Sort, Merge Sort,<br>and Quick Sort, offering a hands-on way to understand "
+                "algorithmic behavior.</span>");
+    p->setText("<span style='font-size: 14px; color: #BDC3C7;'>Project contributors: Nafisah Nubah, Muhammad Rafat Hossain</span>");
+
+    // Make labels transparent to show parent gradient
+    h1->setAttribute(Qt::WA_TranslucentBackground);
+    h2->setAttribute(Qt::WA_TranslucentBackground);
+    p->setAttribute(Qt::WA_TranslucentBackground);
+
+    // Use rich text formatting instead of CSS
     headerLayout->addWidget(h1);
     headerLayout->addWidget(h2);
     headerLayout->addWidget(p);
 
+    // Add this after setting up all other elements
+    headerContainer->adjustSize();
+
     QHBoxLayout *controlsLayout = new QHBoxLayout;
     controlsLayout->addWidget(algorithmSelector);
+    algorithmSelector->setStyleSheet(
+        "QComboBox {"
+        "  background: #2C3E50;"
+        "  color: white;"
+        "  border: 2px solid #3498DB;"
+        "  border-radius: 5px;"
+        "  padding: 8px;"
+        "  min-width: 200px;"
+        "}"
+        "QComboBox:hover { border-color: #1ABC9C; }"
+        "QComboBox::drop-down { border: none; }"
+        );
     controlsLayout->addWidget(startButton);
     controlsLayout->addWidget(resetButton);
+    startButton->setStyleSheet(
+        "QPushButton {"
+        "  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #1ABC9C, stop:1 #16A085);"
+        "  border-radius: 8px;"
+        "  padding: 12px 24px;"
+        "  color: white;"
+        "}"
+        "QPushButton:hover { background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #2ECC71, stop:1 #27AE60); }"
+        "QPushButton:pressed { background: #16A085; }"
+        );
+
+    resetButton->setStyleSheet(
+        "QPushButton {"
+        "  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #E74C3C, stop:1 #C0392B);"
+        "  border-radius: 8px;"
+        "  padding: 12px 24px;"
+        "  color: white;"
+        "}"
+        "QPushButton:hover { background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #FF6B6B, stop:1 #EE5253); }"
+        "QPushButton:pressed { background: #C0392B; }"
+        );
 
     QHBoxLayout *descriptionLayout = new QHBoxLayout;
     paragraphLabel = new QLabel(this);
-    paragraphLabel->setText("<p>This is placeholder text.</p>");
+    paragraphLabel->setText("<p></p>");
     paragraphLabel->setFont(fontAll);
     paragraphLabel->setObjectName("algoDescription");
     descriptionLayout->addWidget(paragraphLabel);
+    paragraphLabel->setStyleSheet(
+        "background: #2C3E50;"
+        "color: #ECF0F1;"
+        "border-radius: 12px;"
+        "padding: 18px;"
+        "border: 2px solid #3498DB;"
+        "margin-top: 10px;"
+        "font-size: 14px;"
+        );
+
+    mainLayout->setContentsMargins(20, 15, 20, 15);
+    mainLayout->setSpacing(15);
+    controlsLayout->setSpacing(10);
+    barsLayout->setSpacing(3);
 
     mainLayout->addWidget(headerContainer);
     mainLayout->addLayout(controlsLayout);
     mainLayout->addWidget(statusLabel);
-
-    // Generate random data for bars
-    data = {23, 41, 25, 54, 18, 14, 9, 10};
-    QHBoxLayout *barsLayout = new QHBoxLayout;
-    barsLayout->setObjectName("barsLayout");
+    statusLabel->setStyleSheet(
+        "color: #BDC3C7;"
+        "padding: 12px 0;"
+        "font-size: 16px;"
+        "qproperty-alignment: AlignCenter;"
+        "border-bottom: 2px solid #3498DB;"
+        "margin: 10px 30px;"
+        );
 
     // Store bars in a container for easy manipulation
-    for (int value : data) {
+    for (int value : data)
+    {
         QLabel *bar = new QLabel;
+        bar->setStyleSheet(
+            "background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3498DB, stop:1 #2980B9);"
+            "border-radius: 8px 8px 0 0;"
+            "color: white;"
+            "border: 1px solid #2C3E50;"
+            );
+        bar->setObjectName("bar");
         bar->setStyleSheet("background-color: blue; color: white; font-weight: thin");
         bar->setText(QString::number(value));
         bar->setFont(fontAcc);
@@ -182,47 +271,76 @@ void MainWindow::setupUI() {
 
     mainLayout->addLayout(barsLayout);
     mainLayout->addLayout(descriptionLayout);
-    centralWidget->setLayout(mainLayout);
-    setCentralWidget(centralWidget);
+    m_centralWidget->setLayout(mainLayout);
+    QScrollArea *scrollArea = new QScrollArea(this);
+    scrollArea->setWidgetResizable(true); // Make the scroll area resize with its contents
+    scrollArea->setWidget(m_centralWidget); // Set the central widget as the scroll area's content
+    setCentralWidget(scrollArea); // Set the scroll area as the main window's central widget
 
     // Footer
     QWidget *footerContainer = new QWidget(this);
     footerContainer->setObjectName("footerContainer");
+    footerContainer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    footerContainer->setStyleSheet(
+        "background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #2A0944, stop:0.5 #3B185F, stop:1 #1ABC9C);"
+        "border-radius: 12px;"
+        "padding: 14px;"
+        );
 
     QVBoxLayout *footerLayout = new QVBoxLayout(footerContainer);
     footerContainer->setLayout(footerLayout);
     QLabel *footerText = new QLabel(this);
     footerText->setObjectName("footerText");
     footerText->setText("© 2025 SortSimple - All rights reserved.");
+    footerText->setStyleSheet(
+        "color: #BDC3C7;"
+        "font-size: 12px;"
+        "qproperty-alignment: AlignCenter;"
+        );
     footerLayout->addWidget(footerText);
 
     mainLayout->addWidget(footerContainer);
+    m_centralWidget->setStyleSheet(
+        "background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #2C3E50, stop:1 #34495E);"
+        );
 }
 
 // Resize event to dynamically adjust bar size based on window size
-void MainWindow::resizeEvent(QResizeEvent *event) {
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
     QMainWindow::resizeEvent(event);
 
-    // Get the width of the window minus the margins (adjust if needed)
-    int windowWidth = event->size().width();
+    // Calculate bar dimensions based on available space
     int barCount = bars.size();
+    int contentWidth = m_centralWidget->width() - 40; // Account for margins
+    int barWidth = qMax(30, contentWidth / (barCount + 2)); // Minimum 30px width
 
-    // Calculate the width of each bar based on the window width
-    int barWidth = windowWidth / (barCount + 2);
+    // Calculate height based on window proportions
+    int barHeight = qBound(80, event->size().height() / 4, 200);
 
-    // Adjust the size of each bar dynamically
-    for (int i = 0; i < barCount; ++i) {
-        bars[i]->setFixedSize(barWidth, 100);
+    for (QLabel *bar : bars) {
+        bar->setFixedSize(barWidth, barHeight);
     }
+
+    // Ensure proper layout update
+    m_centralWidget->layout()->activate();
 }
 
 // Start sorting animation
-void MainWindow::startSorting() {
+void MainWindow::startSorting()
+{
     QString selectedAlgorithm = algorithmSelector->currentText();
     resetBool = false;
 
-    if (selectedAlgorithm == "Bubble Sort") {
+    if (selectedAlgorithm == "Bubble Sort")
+    {
         statusLabel->setText("Sorting using Bubble Sort...");
+        statusLabel->setStyleSheet(
+            "font-size: 16px;"
+            "color: #1ABC9C;"
+            "font-weight: bold;"
+            "margin: 10px 0;"
+            );
         paragraphLabel->setText("<p>Bubble Sort repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order. For this array: {23, 41, 25, 54, 18, 14, 9, 10}, the algorithm will take the following steps:</p>"
                                 "<p>1. First pass: Compare each adjacent pair and swap if necessary. The algorithm compares 23 and 41, then 41 and 25, swapping these to get {23, 25, 41, 54, 18, 14, 9, 10}. The next swaps will continue through the rest of the array.</p>"
                                 "<p>2. Second pass: After the first pass, the largest element (54) has 'bubbled' to the end. The algorithm repeats the process for the remaining unsorted part of the list, gradually moving the next largest element to its correct position.</p>"
@@ -230,7 +348,8 @@ void MainWindow::startSorting() {
         currentIndex = 0;
         animationTimer->start(1000);
     }
-    else if (selectedAlgorithm == "Quick Sort"){
+    else if (selectedAlgorithm == "Quick Sort")
+    {
         statusLabel->setText("Sorting using Quick Sort...");
         paragraphLabel->setText("<p>Quick Sort selects a pivot element and partitions the array into elements less than or equal to the pivot and greater than the pivot. For the array {23, 41, 25, 54, 18, 14, 9, 10}:</p>"
                                 "<p>1. First partition: Choose last element (10) as pivot. Rearrange elements so all values ≤10 come before it. The array becomes {9, 10, 25, 54, 18, 14, 23, 41} with 10 in correct position.</p>"
@@ -239,7 +358,8 @@ void MainWindow::startSorting() {
         currentIndex = 0;
         animationTimer->start(1000);
     }
-    else if (selectedAlgorithm == "Merge Sort"){
+    else if (selectedAlgorithm == "Merge Sort")
+    {
         statusLabel->setText("Sorting using Merge Sort...");
         paragraphLabel->setText("<p>Merge Sort divides the array into halves, sorts them recursively, then merges sorted halves. For {23,41,25,54,18,14,9,10}:</p>"
                                 "<p>1. Split into [23,41,25,54] and [18,14,9,10]. Recursively split until single elements.</p>"
@@ -248,7 +368,8 @@ void MainWindow::startSorting() {
         currentIndex = 0;
         animationTimer->start(1000);
     }
-    else if (selectedAlgorithm == "Insertion Sort"){
+    else if (selectedAlgorithm == "Insertion Sort")
+    {
         statusLabel->setText("Sorting using Insertion Sort...");
         paragraphLabel->setText("<p>Insertion Sort builds the sorted array by inserting one element at a time. Starting with {23,41,25,54,18,14,9,10}:</p>"
                                 "<p>1. First element (23) is sorted. Insert 41 → {23,41}. Insert 25 → {23,25,41}. Insert 54 → {23,25,41,54}.</p>"
@@ -257,7 +378,8 @@ void MainWindow::startSorting() {
         currentIndex = 0;
         animationTimer->start(1000);
     }
-    else {
+    else
+    {
         statusLabel->setText("Sorting using Selection Sort...");
         paragraphLabel->setText("<p>Selection Sort finds the minimum element repeatedly. For {23,41,25,54,18,14,9,10}:</p>"
                                 "<p>1. First iteration: Find minimum (9 at index 6). Swap with first element → {9,41,25,54,18,14,23,10}.</p>"
@@ -269,55 +391,69 @@ void MainWindow::startSorting() {
 }
 
 // Perform a step in the sorting animation
-void MainWindow::performStep() {
-    if (algorithmSelector->currentText() == "Bubble Sort") {
+void MainWindow::performStep()
+{
+    if (algorithmSelector->currentText() == "Bubble Sort")
+    {
         bubbleSortStep();
     }
-    else if ((algorithmSelector->currentText() == "Quick Sort")) {
+    else if ((algorithmSelector->currentText() == "Quick Sort"))
+    {
         quickSortStep();
     }
-    else if (algorithmSelector->currentText() == "Merge Sort") {
+    else if (algorithmSelector->currentText() == "Merge Sort")
+    {
         mergeSortStep();
     }
-    else if ((algorithmSelector->currentText() == "Insertion Sort")) {
+    else if ((algorithmSelector->currentText() == "Insertion Sort"))
+    {
         insertionSortStep();
     }
-    else{
+    else
+    {
         selectionSortStep();
     }
 }
 
 // Check if data is sorted
-bool MainWindow::isSorted() {
-    for (int i = 0; i < data.size() - 1; ++i) {
-        if (data[i] > data[i + 1]) {
+bool MainWindow::isSorted()
+{
+    for (int i = 0; i < data.size() - 1; ++i)
+    {
+        if (data[i] > data[i + 1])
+        {
             return false; // Not sorted in ascending order
         }
     }
     return true; // Sorted in ascending order
 }
 
-void MainWindow::bubbleSortStep() {
+void MainWindow::bubbleSortStep()
+{
     static int i = 0; // Loop variable
     static int j = 0; // Inner loop variable
     static bool swapped = false;
 
-    if (resetBool) {
+    if (resetBool)
+    {
         j = 0;
         i = 0;
         swapped = false;
         int newBars[] = {23, 41, 25, 54, 18, 14, 9, 10};
         swapped = !swapped;
         resetBool = !resetBool;
-        for (int i = 0; i < 8; i++) {
-            bars[i] -> setText(QString::number(newBars[i]));
+        for (int i = 0; i < 8; i++)
+        {
+            bars[i]->setText(QString::number(newBars[i]));
         }
-
     }
 
-    if (i < data.size()) {
-        if (j < data.size() - 1 - i) {
-            if (data[j] > data[j + 1]) {
+    if (i < data.size())
+    {
+        if (j < data.size() - 1 - i)
+        {
+            if (data[j] > data[j + 1])
+            {
                 int currentJ = j; // Capture the value of j
 
                 // Highlight the current swap
@@ -328,7 +464,8 @@ void MainWindow::bubbleSortStep() {
                 swapped = true;
 
                 // Swap data after a small delay to visualize the swap
-                QTimer::singleShot(700, this, [this, currentJ] {
+                QTimer::singleShot(700, this, [this, currentJ]
+                                   {
                     std::swap(data[currentJ], data[currentJ + 1]);
 
                     // Update visuals after swap
@@ -341,54 +478,63 @@ void MainWindow::bubbleSortStep() {
                         bars[currentJ + 1]->setStyleSheet("background-color: blue;");
                         // Continue to the next iteration
                         bubbleSortStep();
-                    });
-                });
+                    }); });
                 return; // Exit to allow the timer to trigger the next step
             }
             ++j; // Move to the next pair
-        } else {
-            if (!swapped) {
+        }
+        else
+        {
+            if (!swapped)
+            {
                 // If no swaps were made, the sorting is complete
                 animationTimer->stop();
                 statusLabel->setText("Sorting complete!");
                 i = 0;
                 j = 0;
 
-                for (auto* bar : bars) {
+                for (auto *bar : bars)
+                {
                     bar->setStyleSheet("background-color: green;");
                 }
             }
-            ++i; // Move to the next pass
-            j = 0; // Reset inner loop variable
-            swapped = false; // Reset swap flag
+            ++i;              // Move to the next pass
+            j = 0;            // Reset inner loop variable
+            swapped = false;  // Reset swap flag
             bubbleSortStep(); // Continue to the next pass
         }
     }
 }
 
-void MainWindow::quickSortStep() {
+void MainWindow::quickSortStep()
+{
     static QVector<QPair<int, int>> stack; // Stack to store sub-array ranges
     static int left = -1, right = -1, pivotIndex = -1;
     static int start = -1, end = -1; // Track current range explicitly
 
     // Initialize stack with the full range during the first call
-    if (stack.isEmpty()) {
+    if (stack.isEmpty())
+    {
         stack.push_back({0, data.size() - 1});
     }
 
     // If no current partitioning step is active, set up a new range
-    if (pivotIndex == -1 && !stack.isEmpty()) {
+    if (pivotIndex == -1 && !stack.isEmpty())
+    {
         auto range = stack.takeLast();
         start = range.first;
         end = range.second;
 
-        if (start < end) {
+        if (start < end)
+        {
             pivotIndex = end; // Choose the last element as pivot
             left = start;
             right = start;
             bars[pivotIndex]->setStyleSheet("background-color: red;"); // Highlight pivot
             QCoreApplication::processEvents();
-        } else {
+        }
+        else
+        {
             // Reset and skip invalid ranges
             pivotIndex = -1;
             left = -1;
@@ -397,9 +543,12 @@ void MainWindow::quickSortStep() {
     }
 
     // If partitioning is active, perform a single step
-    if (pivotIndex != -1) {
-        if (right < pivotIndex) {
-            if (data[right] <= data[pivotIndex]) { // Ascending order comparison
+    if (pivotIndex != -1)
+    {
+        if (right < pivotIndex)
+        {
+            if (data[right] <= data[pivotIndex])
+            { // Ascending order comparison
                 // Swap elements
                 std::swap(data[left], data[right]);
 
@@ -413,16 +562,18 @@ void MainWindow::quickSortStep() {
                 QCoreApplication::processEvents();
 
                 // Restore colors after a short delay
-                QTimer::singleShot(1000, this, [this, left = left, right = right] {
+                QTimer::singleShot(1000, this, [this, left = left, right = right]
+                                   {
                     bars[left]->setStyleSheet("background-color: blue;");
                     bars[right]->setStyleSheet("background-color: blue;");
-                    QCoreApplication::processEvents();
-                });
+                    QCoreApplication::processEvents(); });
 
                 ++left; // Increment left pointer
             }
             ++right; // Increment right pointer
-        } else {
+        }
+        else
+        {
             // Place pivot in its correct position
             std::swap(data[left], data[pivotIndex]);
 
@@ -435,17 +586,19 @@ void MainWindow::quickSortStep() {
             bars[pivotIndex]->setStyleSheet("background-color: red;");
             QCoreApplication::processEvents();
 
-            QTimer::singleShot(1000, this, [this, left = left, pivotIndex = pivotIndex] {
+            QTimer::singleShot(1000, this, [this, left = left, pivotIndex = pivotIndex]
+                               {
                 bars[left]->setStyleSheet("background-color: blue;");
                 bars[pivotIndex]->setStyleSheet("background-color: blue;");
-                QCoreApplication::processEvents();
-            });
+                QCoreApplication::processEvents(); });
 
             // Push new sub-ranges to stack
-            if ((start < left - 1)) {
+            if ((start < left - 1))
+            {
                 stack.push_back({start, left - 1});
             }
-            if ((left + 1 < end)) {
+            if ((left + 1 < end))
+            {
                 stack.push_back({left + 1, end});
             }
 
@@ -454,15 +607,16 @@ void MainWindow::quickSortStep() {
         }
     }
 
-    if(isSorted()){
+    if (isSorted())
+    {
 
-        QTimer::singleShot(2000, this, [this] {
+        QTimer::singleShot(2000, this, [this]
+                           {
             animationTimer->stop();
             statusLabel->setText("Sorting complete!");
             for (QLabel* bar : bars) {
                 bar->setStyleSheet("background-color: green;");
-            }
-        });
+            } });
 
         // Reset static variables for future sorting
         stack.clear();
@@ -470,34 +624,39 @@ void MainWindow::quickSortStep() {
     }
 }
 
-void MainWindow::mergeSortStep() {
-    static QVector<QPair<int, int>> stack;  // Stack to store sub-array ranges
+void MainWindow::mergeSortStep()
+{
+    static QVector<QPair<int, int>> stack; // Stack to store sub-array ranges
     static QVector<int> tempData;
     static int start = -1, end = -1, mid = -1;
 
     // Check if sorting is complete
-    if (isSorted()) {
+    if (isSorted())
+    {
         statusLabel->setText("Sorting complete!");
 
         // Update all bars to show sorted state
-        for (QLabel* bar : bars) {
+        for (QLabel *bar : bars)
+        {
             bar->setStyleSheet("background-color: green;");
         }
 
         // Reset static variables for future sorting
         stack.clear();
-        start = end = mid = -1;  // Reset the partitioning variables
+        start = end = mid = -1; // Reset the partitioning variables
         animationTimer->stop();
     }
 
     // Initialize stack with the full range during the first call
-    if (stack.isEmpty() || resetBool) {
+    if (stack.isEmpty() || resetBool)
+    {
         stack.push_back({0, data.size() - 1});
         resetBool = false;
     }
 
     // If no current partitioning step is active, set up a new range
-    if (start == -1 && !stack.isEmpty()) {
+    if (start == -1 && !stack.isEmpty())
+    {
         // Pop the range from the stack
         auto range = stack.takeLast();
         start = range.first;
@@ -507,25 +666,30 @@ void MainWindow::mergeSortStep() {
         mid = (start + end) / 2;
 
         // Push new sub-ranges onto the stack for further processing
-        if (start < mid) {
+        if (start < mid)
+        {
             stack.push_back({start, mid});
         }
-        if (mid + 1 < end) {
+        if (mid + 1 < end)
+        {
             stack.push_back({mid + 1, end});
         }
 
         // Animate division of the array (highlight the current sub-array being processed)
-        for (int i = start; i <= end; ++i) {
-            if (i >= 0 && i < bars.size() && !isSorted()) {
+        for (int i = start; i <= end; ++i)
+        {
+            if (i >= 0 && i < bars.size() && !isSorted())
+            {
                 bars[i]->setStyleSheet("background-color: red;");
             }
         }
-        QCoreApplication::processEvents();  // UI update
+        QCoreApplication::processEvents(); // UI update
         return;
     }
 
     // Perform merge step once the range is split
-    if (start <= mid && mid + 1 <= end) {
+    if (start <= mid && mid + 1 <= end)
+    {
         int n1 = mid - start + 1;
         int n2 = end - mid;
 
@@ -541,11 +705,15 @@ void MainWindow::mergeSortStep() {
         int i = 0, j = 0, k = start;
 
         // Merge the temp vectors back into data[start..end]
-        while (i < n1 && j < n2) {
-            if (L[i] <= R[j]) {
+        while (i < n1 && j < n2)
+        {
+            if (L[i] <= R[j])
+            {
                 data[k] = L[i];
                 i++;
-            } else {
+            }
+            else
+            {
                 data[k] = R[j];
                 j++;
             }
@@ -553,58 +721,67 @@ void MainWindow::mergeSortStep() {
         }
 
         // Copy the remaining elements of L[], if there are any
-        while (i < n1) {
+        while (i < n1)
+        {
             data[k] = L[i];
             i++;
             k++;
         }
 
         // Copy the remaining elements of R[], if there are any
-        while (j < n2) {
+        while (j < n2)
+        {
             data[k] = R[j];
             j++;
             k++;
         }
 
         // Update visuals after merging
-        for (int i = start; i <= end; ++i) {
-            if (i >= 0 && i < bars.size()) {
+        for (int i = start; i <= end; ++i)
+        {
+            if (i >= 0 && i < bars.size())
+            {
                 bars[i]->setText(QString::number(data[i]));
                 bars[i]->setStyleSheet("background-color: blue;");
             }
         }
 
-        QCoreApplication::processEvents();  // Ensure UI updates
+        QCoreApplication::processEvents(); // Ensure UI updates
 
         // Reset indices to process the next range
-        start = end = mid = -1;  // Reset after a merge step
+        start = end = mid = -1; // Reset after a merge step
         return;
     }
 }
 
-void MainWindow::insertionSortStep() {
+void MainWindow::insertionSortStep()
+{
     static int i = 1;
     static int j = -1;
     static int key = -1;
 
     // Base case: if sorting is done, stop the timer and set status
-    if (i >= data.size()) {
+    if (i >= data.size())
+    {
         animationTimer->stop();
         statusLabel->setText("Sorting complete!");
-        for (QLabel* bar : bars) {
-            bar->setStyleSheet("background-color: green;");  // Final color for sorted bars
+        for (QLabel *bar : bars)
+        {
+            bar->setStyleSheet("background-color: green;"); // Final color for sorted bars
         }
         return;
     }
 
     // Initialize key and j for the first time
-    if (key == -1 && j == -1) {
+    if (key == -1 && j == -1)
+    {
         key = data[i];
         j = i - 1;
     }
 
     // Reset all bars' colors to blue before the new comparison
-    for (int k = 0; k < data.size(); ++k) {
+    for (int k = 0; k < data.size(); ++k)
+    {
         bars[k]->setStyleSheet("background-color: blue;");
     }
 
@@ -612,7 +789,8 @@ void MainWindow::insertionSortStep() {
     bars[i]->setStyleSheet("background-color: yellow;");
 
     // Find the correct position for the key in the sorted part of the array
-    if (j >= 0 && data[j] > key) {
+    if (j >= 0 && data[j] > key)
+    {
         // Highlight the elements being compared
         bars[j]->setStyleSheet("background-color: red;");
         bars[j + 1]->setStyleSheet("background-color: red;");
@@ -629,7 +807,9 @@ void MainWindow::insertionSortStep() {
 
         --j; // Move to the next element to the left
         return;
-    } else {
+    }
+    else
+    {
         // Insert the key at the correct position
         data[j + 1] = key;
         bars[j + 1]->setText(QString::number(key));
@@ -638,28 +818,32 @@ void MainWindow::insertionSortStep() {
         // Move to the next element to be inserted
         ++i;
         key = -1; // Reset key
-        j = -1;  // Reset j
+        j = -1;   // Reset j
     }
 
-    QCoreApplication::processEvents();  // Ensure UI updates
+    QCoreApplication::processEvents(); // Ensure UI updates
 }
 
-void MainWindow::selectionSortStep() {
-    static int i = 0;  // Start from the first element
+void MainWindow::selectionSortStep()
+{
+    static int i = 0;        // Start from the first element
     static int min_idx = -1; // To store the index of the current minimum element
 
     // Base case: if sorting is done, stop the timer and set status
-    if (i >= data.size() - 1) {
+    if (i >= data.size() - 1)
+    {
         animationTimer->stop();
         statusLabel->setText("Sorting complete!");
-        for (QLabel* bar : bars) {
-            bar->setStyleSheet("background-color: green;");  // Final color for sorted bars
+        for (QLabel *bar : bars)
+        {
+            bar->setStyleSheet("background-color: green;"); // Final color for sorted bars
         }
         return;
     }
 
     // Reset all bars' colors to blue before the new comparison
-    for (int k = 0; k < data.size(); ++k) {
+    for (int k = 0; k < data.size(); ++k)
+    {
         bars[k]->setStyleSheet("background-color: blue;");
     }
 
@@ -667,27 +851,33 @@ void MainWindow::selectionSortStep() {
     bars[i]->setStyleSheet("background-color: yellow;");
 
     // Initialize min_idx at the start of the unsorted portion
-    if (min_idx == -1) {
+    if (min_idx == -1)
+    {
         min_idx = i;
     }
 
     // Iterate through the unsorted portion to find the actual minimum element
-    if (min_idx == i) {
+    if (min_idx == i)
+    {
         // Highlight the element being compared
-        for (int j = i + 1; j < data.size(); ++j) {
+        for (int j = i + 1; j < data.size(); ++j)
+        {
             bars[j]->setStyleSheet("background-color: red;");
         }
         QCoreApplication::processEvents();
 
-        for (int j = i + 1; j < data.size(); ++j) {
-            if (data[j] < data[min_idx]) {
+        for (int j = i + 1; j < data.size(); ++j)
+        {
+            if (data[j] < data[min_idx])
+            {
                 min_idx = j; // Update min_idx if a smaller element is found
             }
         }
     }
 
     // Swap if necessary (after the full loop for minimum element)
-    if (min_idx != i) {
+    if (min_idx != i)
+    {
         // Highlight the bars that are being swapped (red before swap)
         bars[i]->setStyleSheet("background-color: red;");
         bars[min_idx]->setStyleSheet("background-color: red;");
@@ -701,18 +891,17 @@ void MainWindow::selectionSortStep() {
         bars[min_idx]->setText(QString::number(data[min_idx]));
 
         // Keep them red for a moment after the swap
-        QTimer::singleShot(700, this, [this, i = i, min_idx = min_idx] {
+        QTimer::singleShot(700, this, [this, i = i, min_idx = min_idx]
+                           {
             // Reset colors to blue after the swap
             bars[i]->setStyleSheet("background-color: blue;");
             bars[min_idx]->setStyleSheet("background-color: blue;");
-            QCoreApplication::processEvents();
-        });
+            QCoreApplication::processEvents(); });
     }
 
     // Move to the next element
     ++i;
-    min_idx = -1;  // Reset min_idx for the next round
+    min_idx = -1; // Reset min_idx for the next round
 
-    QCoreApplication::processEvents();  // Ensure UI updates
+    QCoreApplication::processEvents(); // Ensure UI updates
 }
-
