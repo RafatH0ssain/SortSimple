@@ -15,13 +15,13 @@
 // Constructor
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
-      m_centralWidget(new QWidget(this)),
-      algorithmSelector(new QComboBox(this)),
-      startButton(new QPushButton("Start", this)),
-      resetButton(new QPushButton("Reset", this)),
-      statusLabel(new QLabel("Select an algorithm and start", this)),
-      currentIndex(0),
-      animationTimer(new QTimer(this))
+    m_centralWidget(new QWidget(this)),
+    algorithmSelector(new QComboBox(this)),
+    startButton(new QPushButton("Start", this)),
+    resetButton(new QPushButton("Reset", this)),
+    statusLabel(new QLabel("Select an algorithm and start", this)),
+    currentIndex(0),
+    animationTimer(new QTimer(this))
 {
 
     setupUI();
@@ -117,6 +117,7 @@ void MainWindow::setupUI()
 
     // Set the font for the whole application
     QFont fontAll(fontFamilyAll);
+    fontAll.setPixelSize(14);
     qApp->setFont(fontAll);
 
     int fontIdAcc = QFontDatabase::addApplicationFont("SuperComic-qZg62.ttf");
@@ -139,16 +140,25 @@ void MainWindow::setupUI()
     QWidget *headerContainer = new QWidget(this);
     headerContainer->setObjectName("headerContainer");
     headerContainer->setStyleSheet(
-        "background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #2A0944, stop:0.5 #3B185F, stop:1 #1ABC9C);"
+        "background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #1a1a2e, stop:1 #3a0c60);"
         "border-radius: 15px;"
-        "padding: 20px;"
-        "margin-bottom: 20px;"
-        "color: white;"  // Set default text color for all child elements
+        "padding: 35px 30px;"
+        "border: 1px solid rgba(255,255,255,0.15);"
+        "            inset 0 4px 8px rgba(255,255,255,0.08);"
+        "margin-bottom: 25px;"
         );
 
     QVBoxLayout *headerLayout = new QVBoxLayout(headerContainer);
     headerLayout->setSpacing(8);  // Reduce spacing between elements
     headerLayout->setContentsMargins(15, 15, 15, 15);  // Consistent internal padding
+
+    QFrame *headerDecoration = new QFrame(headerContainer);
+    headerDecoration->setFixedHeight(4);
+    headerDecoration->setStyleSheet(
+        "background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3a86ff, stop:1 #8338ec);"
+        "border-radius: 2px;"
+        "margin: 15px 0;"
+        );
 
     QLabel *h1 = new QLabel(this);
     QLabel *h2 = new QLabel(this);
@@ -160,11 +170,14 @@ void MainWindow::setupUI()
     p->setAlignment(Qt::AlignCenter);
 
     // Set text properties
-    h1->setText("<span style='font-size: 28px; font-weight: bold;'>SortSimple - Dynamic Sorting Visualization</span>");
-    h2->setText("<span style='font-size: 16px;'>An interactive app that visually demonstrates the step-by-step process of "
-                "sorting algorithms like Bubble Sort, Merge Sort,<br>and Quick Sort, offering a hands-on way to understand "
-                "algorithmic behavior.</span>");
-    p->setText("<span style='font-size: 14px; color: #BDC3C7;'>Project contributors: Nafisah Nubah, Muhammad Rafat Hossain</span>");
+    h1->setText("<span style='font-size: 32px; font-weight: bold; color: #ffffff; "
+                "text-shadow: 0 2px 4px rgba(0,0,0,0.5);'>SortSimple - Dynamic Sorting Visualization</span>");
+    h2->setText("<span style='font-size: 17px; color: rgba(255,255,255,0.9); "
+                "text-shadow: 0 1px 2px rgba(0,0,0,0.3); line-height: 1.4;'>"
+                "An interactive app that visually demonstrates the step-by-step process of "
+                "sorting algorithms like Bubble Sort, Merge Sort,<br>and Quick Sort, offering "
+                "a hands-on way to understand algorithmic behavior.</span>");
+    p->setText("<span style='font-size: 14px; color: #BDC3C7;'>Project contributors: Nafisah Nubah, Rafat Hossain</span>");
 
     // Make labels transparent to show parent gradient
     h1->setAttribute(Qt::WA_TranslucentBackground);
@@ -173,8 +186,8 @@ void MainWindow::setupUI()
 
     // Use rich text formatting instead of CSS
     headerLayout->addWidget(h1);
+    headerLayout->insertWidget(1, headerDecoration);
     headerLayout->addWidget(h2);
-    headerLayout->addWidget(p);
 
     // Add this after setting up all other elements
     headerContainer->adjustSize();
@@ -183,27 +196,38 @@ void MainWindow::setupUI()
     controlsLayout->addWidget(algorithmSelector);
     algorithmSelector->setStyleSheet(
         "QComboBox {"
-        "  background: #2C3E50;"
+        "  background: rgba(255,255,255,0.05);"
         "  color: white;"
-        "  border: 2px solid #3498DB;"
-        "  border-radius: 5px;"
-        "  padding: 8px;"
-        "  min-width: 200px;"
+        "  border: 1px solid rgba(255,255,255,0.15);"
+        "  border-radius: 6px;"
+        "  padding: 10px;"
+        "  min-width: 220px;"
         "}"
-        "QComboBox:hover { border-color: #1ABC9C; }"
-        "QComboBox::drop-down { border: none; }"
+        "QComboBox:hover { border-color: rgba(255,255,255,0.3); }"
+        "QComboBox::drop-down { border: none; width: 30px; }"
+        "QComboBox QAbstractItemView {"
+        "  background: #1a1a2e;"
+        "  color: white;"
+        "  selection-background-color: #3a86ff;"
+        "}"
         );
     controlsLayout->addWidget(startButton);
     controlsLayout->addWidget(resetButton);
     startButton->setStyleSheet(
         "QPushButton {"
-        "  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #1ABC9C, stop:1 #16A085);"
+        "  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #00b4d8, stop:1 #0077b6);"
         "  border-radius: 8px;"
-        "  padding: 12px 24px;"
+        "  padding: 14px 28px;"
         "  color: white;"
+        "  font-weight: 500;"
+        "  border: none;"
+        "  transition: transform 0.2s;"
         "}"
-        "QPushButton:hover { background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #2ECC71, stop:1 #27AE60); }"
-        "QPushButton:pressed { background: #16A085; }"
+        "QPushButton:hover {"
+        "  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #48cae4, stop:1 #0096c7);"
+        "  transform: translateY(-1px);"
+        "}"
+        "QPushButton:pressed { transform: translateY(0); }"
         );
 
     resetButton->setStyleSheet(
@@ -224,13 +248,14 @@ void MainWindow::setupUI()
     paragraphLabel->setObjectName("algoDescription");
     descriptionLayout->addWidget(paragraphLabel);
     paragraphLabel->setStyleSheet(
-        "background: #2C3E50;"
-        "color: #ECF0F1;"
+        "background: rgba(255,255,255,0.03);"
+        "color: #caf0f8;"
         "border-radius: 12px;"
-        "padding: 18px;"
-        "border: 2px solid #3498DB;"
-        "margin-top: 10px;"
+        "padding: 20px;"
+        "border: 1px solid rgba(255,255,255,0.08);"
+        "margin-top: 15px;"
         "font-size: 14px;"
+        "line-height: 1.5;"
         );
 
     mainLayout->setContentsMargins(20, 15, 20, 15);
@@ -242,12 +267,13 @@ void MainWindow::setupUI()
     mainLayout->addLayout(controlsLayout);
     mainLayout->addWidget(statusLabel);
     statusLabel->setStyleSheet(
-        "color: #BDC3C7;"
-        "padding: 12px 0;"
-        "font-size: 16px;"
-        "qproperty-alignment: AlignCenter;"
-        "border-bottom: 2px solid #3498DB;"
-        "margin: 10px 30px;"
+        "color: #a8dadc;"
+        "padding: 12px 20px;"
+        "font-size: 15px;"
+        "background: rgba(255,255,255,0.05);"
+        "border-radius: 8px;"
+        "border: 1px solid rgba(255,255,255,0.1);"
+        "margin: 15px 40px;"
         );
 
     // Store bars in a container for easy manipulation
@@ -261,7 +287,14 @@ void MainWindow::setupUI()
             "border: 1px solid #2C3E50;"
             );
         bar->setObjectName("bar");
-        bar->setStyleSheet("background-color: blue; color: white; font-weight: thin");
+        bar->setStyleSheet(
+            "background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #8338ec, stop:1 #3a86ff);"
+            "border-radius: 6px 6px 0 0;"
+            "color: white;"
+            "border: 1px solid rgba(255,255,255,0.15);"
+            "font-weight: bold;"
+            "text-shadow: 0 1px 2px rgba(0,0,0,0.3);"
+            );
         bar->setText(QString::number(value));
         bar->setFont(fontAcc);
         bar->setAlignment(Qt::AlignCenter);
@@ -282,27 +315,47 @@ void MainWindow::setupUI()
     footerContainer->setObjectName("footerContainer");
     footerContainer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     footerContainer->setStyleSheet(
-        "background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #2A0944, stop:0.5 #3B185F, stop:1 #1ABC9C);"
-        "border-radius: 12px;"
-        "padding: 14px;"
+        "background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #1a1a2e, stop:1 #3a0c60);"
+        "border-radius: 15px;"
+        "padding: 25px;"
+        "border: 1px solid rgba(255,255,255,0.15);"
+        "box-shadow: 0 8px 32px rgba(0,0,0,0.3);"
+        "margin-top: 30px;"
         );
 
     QVBoxLayout *footerLayout = new QVBoxLayout(footerContainer);
-    footerContainer->setLayout(footerLayout);
+    footerLayout->setSpacing(8);
+    footerLayout->setContentsMargins(20, 15, 20, 15);
+
+    QFrame *footerSeparator = new QFrame(footerContainer);
+    footerSeparator->setFixedHeight(2);
+    footerSeparator->setStyleSheet(
+        "background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3a86ff, stop:1 #8338ec);"
+        "margin: 0 30px 15px 30px;"
+        );
+    footerLayout->addWidget(footerSeparator);
+
     QLabel *footerText = new QLabel(this);
-    footerText->setObjectName("footerText");
-    footerText->setText("© 2025 SortSimple - All rights reserved.");
+    footerText->setText("© 2025 SortSimple - All rights reserved.<br>"
+                        "<span style='font-size: 12px; color: rgba(200,200,200,0.8);'>"
+                        "Project contributors: Nafisah Nubah, Rafat Hossain</span>");
     footerText->setStyleSheet(
-        "color: #BDC3C7;"
-        "font-size: 12px;"
+        "color: rgba(224,224,224,0.9);"
+        "font-size: 13px;"
         "qproperty-alignment: AlignCenter;"
+        "text-shadow: 0 1px 3px rgba(0,0,0,0.4);"
+        "letter-spacing: 0.5px;"
         );
     footerLayout->addWidget(footerText);
 
     mainLayout->addWidget(footerContainer);
     m_centralWidget->setStyleSheet(
-        "background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #2C3E50, stop:1 #34495E);"
+        "background: qlineargradient(x1:0.5, y1:0, x2:0.5, y2:1, stop:0 #1a1a2e, stop:1 #16213e);"
         );
+
+    // Add this at the end of setupUI()
+    QApplication::setEffectEnabled(Qt::UI_AnimateCombo, true);
+    QApplication::setEffectEnabled(Qt::UI_FadeMenu, true);
 }
 
 // Resize event to dynamically adjust bar size based on window size
@@ -313,7 +366,8 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     // Calculate bar dimensions based on available space
     int barCount = bars.size();
     int contentWidth = m_centralWidget->width() - 40; // Account for margins
-    int barWidth = qMax(30, contentWidth / (barCount + 2)); // Minimum 30px width
+    // In resizeEvent, modify bar spacing
+    int barWidth = qMax(40, contentWidth / (barCount + 4)); // Increased minimum width
 
     // Calculate height based on window proportions
     int barHeight = qBound(80, event->size().height() / 4, 200);
@@ -466,19 +520,19 @@ void MainWindow::bubbleSortStep()
                 // Swap data after a small delay to visualize the swap
                 QTimer::singleShot(700, this, [this, currentJ]
                                    {
-                    std::swap(data[currentJ], data[currentJ + 1]);
+                                       std::swap(data[currentJ], data[currentJ + 1]);
 
-                    // Update visuals after swap
-                    bars[currentJ]->setText(QString::number(data[currentJ]));
-                    bars[currentJ + 1]->setText(QString::number(data[currentJ + 1]));
+                                       // Update visuals after swap
+                                       bars[currentJ]->setText(QString::number(data[currentJ]));
+                                       bars[currentJ + 1]->setText(QString::number(data[currentJ + 1]));
 
-                    QTimer::singleShot(300, this, [this, currentJ] {
-                        // Restore original color after the swap
-                        bars[currentJ]->setStyleSheet("background-color: blue;");
-                        bars[currentJ + 1]->setStyleSheet("background-color: blue;");
-                        // Continue to the next iteration
-                        bubbleSortStep();
-                    }); });
+                                       QTimer::singleShot(300, this, [this, currentJ] {
+                                           // Restore original color after the swap
+                                           bars[currentJ]->setStyleSheet("background-color: blue;");
+                                           bars[currentJ + 1]->setStyleSheet("background-color: blue;");
+                                           // Continue to the next iteration
+                                           bubbleSortStep();
+                                       }); });
                 return; // Exit to allow the timer to trigger the next step
             }
             ++j; // Move to the next pair
@@ -564,9 +618,9 @@ void MainWindow::quickSortStep()
                 // Restore colors after a short delay
                 QTimer::singleShot(1000, this, [this, left = left, right = right]
                                    {
-                    bars[left]->setStyleSheet("background-color: blue;");
-                    bars[right]->setStyleSheet("background-color: blue;");
-                    QCoreApplication::processEvents(); });
+                                       bars[left]->setStyleSheet("background-color: blue;");
+                                       bars[right]->setStyleSheet("background-color: blue;");
+                                       QCoreApplication::processEvents(); });
 
                 ++left; // Increment left pointer
             }
@@ -588,9 +642,9 @@ void MainWindow::quickSortStep()
 
             QTimer::singleShot(1000, this, [this, left = left, pivotIndex = pivotIndex]
                                {
-                bars[left]->setStyleSheet("background-color: blue;");
-                bars[pivotIndex]->setStyleSheet("background-color: blue;");
-                QCoreApplication::processEvents(); });
+                                   bars[left]->setStyleSheet("background-color: blue;");
+                                   bars[pivotIndex]->setStyleSheet("background-color: blue;");
+                                   QCoreApplication::processEvents(); });
 
             // Push new sub-ranges to stack
             if ((start < left - 1))
@@ -612,11 +666,11 @@ void MainWindow::quickSortStep()
 
         QTimer::singleShot(2000, this, [this]
                            {
-            animationTimer->stop();
-            statusLabel->setText("Sorting complete!");
-            for (QLabel* bar : bars) {
-                bar->setStyleSheet("background-color: green;");
-            } });
+                               animationTimer->stop();
+                               statusLabel->setText("Sorting complete!");
+                               for (QLabel* bar : bars) {
+                                   bar->setStyleSheet("background-color: green;");
+                               } });
 
         // Reset static variables for future sorting
         stack.clear();
@@ -638,7 +692,7 @@ void MainWindow::mergeSortStep()
         // Update all bars to show sorted state
         for (QLabel *bar : bars)
         {
-            bar->setStyleSheet("background-color: green;");
+            setStyleSheet("background-color: green;");
         }
 
         // Reset static variables for future sorting
@@ -893,10 +947,10 @@ void MainWindow::selectionSortStep()
         // Keep them red for a moment after the swap
         QTimer::singleShot(700, this, [this, i = i, min_idx = min_idx]
                            {
-            // Reset colors to blue after the swap
-            bars[i]->setStyleSheet("background-color: blue;");
-            bars[min_idx]->setStyleSheet("background-color: blue;");
-            QCoreApplication::processEvents(); });
+                               // Reset colors to blue after the swap
+                               bars[i]->setStyleSheet("background-color: blue;");
+                               bars[min_idx]->setStyleSheet("background-color: blue;");
+                               QCoreApplication::processEvents(); });
     }
 
     // Move to the next element
