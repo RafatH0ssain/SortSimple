@@ -1,0 +1,9 @@
+# ninja log v6
+62	1190	7614558258542522	SortSimple_autogen/timestamp	bc35a45afa62a84b
+62	1190	7614558258542522	SortSimple_autogen/mocs_compilation.cpp	bc35a45afa62a84b
+62	1190	7614558258542522	D:/projects/SortSimple/SortSimple/build/Desktop-Release/SortSimple_autogen/timestamp	bc35a45afa62a84b
+1202	7932	7614558259953057	CMakeFiles/SortSimple.dir/SortSimple_autogen/mocs_compilation.cpp.obj	c96ff5c7507e15ae
+62	1190	7614558258542522	D:/projects/SortSimple/SortSimple/build/Desktop-Release/SortSimple_autogen/mocs_compilation.cpp	bc35a45afa62a84b
+10214	10611	7614558350073593	SortSimple.exe	50df4ecce35383c8
+1216	7855	7614558260093065	CMakeFiles/SortSimple.dir/main.cpp.obj	7c808ca92869cb9d
+1226	10212	7614558260193057	CMakeFiles/SortSimple.dir/mainwindow.cpp.obj	790a4679fc524e07

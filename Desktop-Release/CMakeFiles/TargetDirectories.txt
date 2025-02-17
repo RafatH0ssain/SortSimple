@@ -1,0 +1,8 @@
+D:/projects/SortSimple/SortSimple/build/Desktop-Release/CMakeFiles/SortSimple.dir
+D:/projects/SortSimple/SortSimple/build/Desktop-Release/CMakeFiles/edit_cache.dir
+D:/projects/SortSimple/SortSimple/build/Desktop-Release/CMakeFiles/rebuild_cache.dir
+D:/projects/SortSimple/SortSimple/build/Desktop-Release/CMakeFiles/list_install_components.dir
+D:/projects/SortSimple/SortSimple/build/Desktop-Release/CMakeFiles/install.dir
+D:/projects/SortSimple/SortSimple/build/Desktop-Release/CMakeFiles/install/local.dir
+D:/projects/SortSimple/SortSimple/build/Desktop-Release/CMakeFiles/SortSimple_autogen_timestamp_deps.dir
+D:/projects/SortSimple/SortSimple/build/Desktop-Release/CMakeFiles/SortSimple_autogen.dir
