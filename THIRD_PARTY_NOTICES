@@ -1,0 +1,15 @@
+# Third-Party Notices
+
+## Qt
+
+The Windows release bundle redistributes Qt 6 runtime libraries (`Qt6Core.dll`, `Qt6Gui.dll`, `Qt6Widgets.dll`, and related DLLs and plugins). Qt is licensed under the GNU Lesser General Public License (LGPL) v3, the GNU General Public License (GPL) v2/v3, or a commercial license from The Qt Company. Any republication of those binaries (for example as a GitHub Release asset) must follow the LGPL/GPL terms, including the source and relinking obligations for LGPL use. See https://www.qt.io/licensing/.
+
+## Fonts
+
+This project ships three font files used by the UI:
+
+- `SortSimple/Debrosee-ALPnL.ttf`
+- `SortSimple/Nasa21-l23X.ttf`
+- `SortSimple/SuperComic-qZg62.ttf`
+
+They came from free-font distribution sites for coursework use. No license text or permission grant is included with them, and their terms may not allow redistribution. Treat them as unlicensed third-party assets. Before commercial use or wide redistribution, replace them with fonts under a clear license (for example SIL OFL fonts from Google Fonts). The same files also appear in the Windows `Desktop-Release` bundle.
