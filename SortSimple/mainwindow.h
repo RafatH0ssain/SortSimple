@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "sorts.h"
+
 #include <QMainWindow>
 #include <QComboBox>
 #include <QPushButton>
@@ -19,22 +21,17 @@ public:
     ~MainWindow();
 
 private slots:
-    void startSorting(); // Slot to handle sorting
-    void performStep();  // Slot to handle animation steps
-    void resetSorting();  // Slot for resetting the sorting
+    void startSorting();
+    void performStep();
+    void resetSorting();
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private:
-    void setupUI();      // Function to set up the UI
-    void bubbleSortStep(); // Step for bubble sort animation
-    void quickSortStep(); // Step for quick sort animation
-    void mergeSortStep(); // Step for merge sort animation
-    void insertionSortStep(); // Step for insertion sort animation
-    void selectionSortStep(); // Step for selection sort animation
-    bool isSorted();
-    void applyStyles();
+    void setupUI();
+    void applyStepVisuals(const sorts::StepResult &result);
+    void finishSortedUI();
 
     QWidget *m_centralWidget;
     QComboBox *algorithmSelector;
@@ -43,12 +40,16 @@ private:
     QLabel *statusLabel;
     QLabel *paragraphLabel;
 
-    std::vector<int> data;       // Array to sort
-    std::vector<QLabel *> bars;  // Bar widgets for visualization
-    int currentIndex;            // Index for sorting steps
-    int currentSwapIndex;
-    bool resetBool = false;
-    QTimer *animationTimer;      // Timer for step animation
+    std::vector<int> data;
+    std::vector<QLabel *> bars;
+    int currentIndex;
+    QTimer *animationTimer;
+
+    sorts::BubbleSort bubbleSort;
+    sorts::QuickSort quickSort;
+    sorts::MergeSort mergeSort;
+    sorts::InsertionSort insertionSort;
+    sorts::SelectionSort selectionSort;
 };
 
 #endif // MAINWINDOW_H
