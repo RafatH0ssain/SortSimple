@@ -1,0 +1,22 @@
+# Build and deploy output
+Desktop-Release/
+build*/
+.qtc*/
+.qt/
+.vscode/
+*.obj
+*.o
+*.dll
+*.exe
+*.qm
+CMakeCache.txt
+CMakeCache.txt.prev
+build.ninja
+.ninja_deps
+.ninja_log
+cmake_install.cmake
+Testing/
+*_autogen/
+
+# OS
+.DS_Store
