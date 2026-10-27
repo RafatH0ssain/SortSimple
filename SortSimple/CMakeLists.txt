@@ -17,6 +17,8 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        sorts.cpp
+        sorts.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -68,3 +70,11 @@ install(TARGETS SortSimple
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(SortSimple)
 endif()
+
+enable_testing()
+add_executable(sorts_tests
+        ${CMAKE_CURRENT_SOURCE_DIR}/../tests/test_sorts.cpp
+        sorts.cpp
+)
+target_include_directories(sorts_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+add_test(NAME sorts_tests COMMAND sorts_tests)
